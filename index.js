@@ -40,6 +40,10 @@ app.use(express.json());
 
 app.post('/register', async (req, res) => {
     try {
+        const reqBody = req.body;
+        if(reqBody.type === "user") reqBody.role = "user";
+        else if(reqBody.type === "owner") reqBody.role = "admin";
+        else return res.send({"msg": "type is require (user || owner)"});
         const user = await User.create(req.body);
         const oldUser = await User.findOne({ email });
         if (oldUser) {
@@ -54,7 +58,7 @@ app.use(express.json());
 
 app.get('/app', async (req, res) => {
     try {
-        res.status(200).send({"msg":"it is work fine"});
+        res.status(200).send({ "msg": "it is work fine" });
     } catch (err) {
         res.send(err);
     }
@@ -63,7 +67,7 @@ app.get('/app', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ where: { email: email }});
+        const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(404).send("User Not Found");
         }
@@ -71,14 +75,14 @@ app.post('/login', async (req, res) => {
             return res.status(401).send("Password is not correct");
         }
         user.password = undefined;
-        res.status(200).json({ user, "token": generateToken(user.id) });
+        res.status(200).json(baseResponse(user,{"token":generateToken(user.id)}));
     } catch (e) {
         console.log(e);
         res.send(e);
     }
 });
 
-app.listen(port,"192.168.1.5", async () => {
+app.listen(port, "192.168.1.5", async () => {
     await dbConnection.sync();
     console.log(`Example app listening on port ${port}`)
 })
@@ -89,4 +93,8 @@ function generateToken(user_id) {
         process.env.TOKEN_KEY
     );
     return token;
+}
+
+function baseResponse(data, meta) { 
+    return { data , meta}; 
 }
