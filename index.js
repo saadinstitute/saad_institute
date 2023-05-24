@@ -75,7 +75,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).send("Password is not correct");
         }
         user.password = undefined;
-        res.status(200).json(baseResponse(user,{"token":generateToken(user.id)}));
+        res.status(200).json(baseResponse({user,"token":generateToken(user.id)},true));
     } catch (e) {
         console.log(e);
         res.send(e);
@@ -95,6 +95,16 @@ function generateToken(user_id) {
     return token;
 }
 
-function baseResponse(data, meta) { 
-    return { data , meta}; 
+function baseResponse(data, extra, success, msg) { 
+    return { data , "meta":{...extra, success, msg}}; 
+}
+
+
+function baseResponse(data, extra, success) { 
+    return { data , "meta":{...extra, success, "msg":success?"operation successed":"something wrong happend"}}; 
+}
+
+
+function baseResponse(data, success) { 
+    return { data , "meta":{success, "msg":success?"operation successed":"something wrong happend"}}; 
 }
