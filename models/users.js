@@ -9,11 +9,11 @@ const User = dbConnection.define('Users', {
         allowNull: false,
         autoIncrement: true,
     },
-    firstName: {
+    fullName: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    lastName: {
+    username: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -36,20 +36,27 @@ const User = dbConnection.define('Users', {
             isUrl: true
         }
     },
-    age: {
-        type: DataTypes.INTEGER,
+    dateOfBirth: {
+        type: DataTypes.DATE,
         allowNull: false,
-        validate: {
-            min: 18,
-            max: 50,
-            
-        }
     },
     mobile: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
-    }
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    gender: {
+        type: DataTypes.ENUM("male","female"),
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.ENUM("user","admin","superAdmin"),
+        allowNull: false
+    },
 });
 
 module.exports = User;

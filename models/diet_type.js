@@ -2,17 +2,21 @@ const { DataTypes } = require("sequelize");
 
 const dbConnection = require("../database/db");
 
-const Role = dbConnection.define('Roles', {
+const DietType = dbConnection.define('DietTypes', {
     id: {
         primaryKey: true,
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
     },
-    name: {
+    type: {
         type: DataTypes.STRING,
-        allowNull: false,
-    }
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
 });
 
-module.exports = Role;
+module.exports = DietType;
