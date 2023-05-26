@@ -4,9 +4,9 @@ const router = require('express').Router();
 const BaseResponse = require('../models/base_response');
 
 router.use(function (req = request, res = response, next) {
-    if (['/login', '/register', '/app'].some((word) => req.url.startsWith(word)))
+    if (['/auth', '/app'].some((word) => req.url.startsWith(word)))
         return next();
-    var token = req.headers['x-access-token'];
+    var token = req.headers['authorization'];
     console.log(token);
     if (token) {
         jwt.verify(token, process.env.TOKEN_KEY,
@@ -17,16 +17,14 @@ router.use(function (req = request, res = response, next) {
                         expiredAt: err.expiredAt
                     };
                     console.log(errordata);
-                    return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized"}));
+                    return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401}));
                 }
                 req.decoded = decoded;
                 console.log(decoded);
                 next();
             });
     } else {
-        return res.status(403).json({
-            message: 'Forbidden Access'
-        });
+        return res.status(403).send(new BaseResponse({success: false, msg: "Forbidden Access",status: 403}));
     }
 });
 

@@ -15,7 +15,8 @@ const User = dbConnection.define('Users', {
     },
     username: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
         type: DataTypes.STRING,
@@ -56,6 +57,11 @@ const User = dbConnection.define('Users', {
     role: {
         type: DataTypes.ENUM("user","admin","superAdmin"),
         allowNull: false
+    },
+    isConfirmed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     },
 });
 

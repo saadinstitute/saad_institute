@@ -1,7 +1,10 @@
 const router = require('express').Router();
-const { register, login } = require('../controllers/user.controller');
+const { register, login, mailSender, verifyAccount, sendCode } = require('../controllers/user.controller');
 
-router.post('/login', login);
-router.post('/register', register);
+router.post('/auth/login', login);
+router.post('/auth/register', register);
+router.post('/auth/testMail', mailSender);
+router.post('/auth/verifyAccount', verifyAccount);
+router.post('/auth/sendCode', sendCode);
 
 module.exports = router;
