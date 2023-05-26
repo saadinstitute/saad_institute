@@ -13,7 +13,7 @@ app.use(middleware);
 app.use(userRouter);
 app.use(appRouter);
 
-app.listen(port, async () => {
+app.listen(port,"0.0.0.0", async () => {
     await dbConnection.sync({alter: true});
     console.log(`Example app listening on port ${port}`)
 })
