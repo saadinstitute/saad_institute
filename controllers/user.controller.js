@@ -13,11 +13,11 @@ const register =  async (req, res) => {
         const user = await User.create(req.body);
         const oldUser = await User.findOne({ email });
         if (oldUser) {
-            return res.send(new BaseResponse({success:false, msg: "User Already Exist. Please Login"}));
+            return res.send(new BaseResponse({success:false, msg: "User Already Exist. Please Login",status:409}));
         }
         res.status(201).json(new BaseResponse({ user, "token": generateToken(user._id) }));
     } catch (err) {
-        res.send(err);
+        res.status(400).send(new BaseResponse({msg: e,success:false}));
     }
 };
 
@@ -27,17 +27,17 @@ const login = async (req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(404).send(new BaseResponse({msg:"User Not Found"}));
+            return res.status(404).send(new BaseResponse({msg:"User Not Found",status: 404,success: false}));
         }
         if (user.password != password) {
-            return res.status(401).send(new BaseResponse({msg:"Password is not correct"}));
+            return res.status(401).send(new BaseResponse({msg:"Password is not correct", status: 401,success: false}));
         }
         user.password = undefined;
         console.log(user);
         res.send(new BaseResponse({data: {user,"token":generateToken(user.id)},success: true, msg:"success"}));
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({msg: `$e`}));
+        res.status(400).send(new BaseResponse({msg: e,success:false}));
     }
 };
 
