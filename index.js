@@ -14,7 +14,7 @@ app.use(middleware);
 app.use(userRouter);
 app.use(appRouter);
 
-app.listen(port, "0.0.0.0", async () => {
+app.listen(port, "185.42.117.108", async () => {
     await dbConnection.sync();
     console.log(`Example app listening on port ${port}`)
 })
