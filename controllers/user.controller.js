@@ -9,13 +9,13 @@ const register =  async (req, res) => {
         const reqBody = req.body;
         if(reqBody.type === "user") reqBody.role = "user";
         else if(reqBody.type === "owner") reqBody.role = "admin";
-        else return res.send({"msg": "type is require (user || owner)"});
+        else return res.send(new BaseResponse({success:false, msg: `\"type\" is required (user || owner)`}));
         const user = await User.create(req.body);
         const oldUser = await User.findOne({ email });
         if (oldUser) {
-            return res.status(409).send("User Already Exist. Please Login");
+            return res.send(new BaseResponse({success:false, msg: "User Already Exist. Please Login"}));
         }
-        res.status(201).json({ user, "token": generateToken(user._id) });
+        res.status(201).json(new BaseResponse({ user, "token": generateToken(user._id) }));
     } catch (err) {
         res.send(err);
     }
@@ -23,19 +23,21 @@ const register =  async (req, res) => {
 
 const login = async (req, res) => {
     try {
+        console.log(req.params);
         const { email, password } = req.body;
-        const user = await User.findOne({ where: { email: email } });
+        const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(404).send("User Not Found");
+            return res.status(404).send(new BaseResponse({msg:"User Not Found"}));
         }
         if (user.password != password) {
-            return res.status(401).send("Password is not correct");
+            return res.status(401).send(new BaseResponse({msg:"Password is not correct"}));
         }
         user.password = undefined;
-        res.json(new BaseResponse({user,"token":generateToken(user.id)},{},true));
+        console.log(user);
+        res.send(new BaseResponse({data: {user,"token":generateToken(user.id)},success: true, msg:"success"}));
     } catch (e) {
         console.log(e);
-        res.send(e);
+        res.status(400).send(new BaseResponse({msg: `$e`}));
     }
 };
 

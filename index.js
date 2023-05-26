@@ -9,10 +9,10 @@ const port = process.env.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
 // Middle Ware
+app.use(express.json());
 app.use(middleware);
 app.use(userRouter);
 app.use(appRouter);
-app.use(express.json());
 
 app.listen(port, "192.168.1.6", async () => {
     await dbConnection.sync();
