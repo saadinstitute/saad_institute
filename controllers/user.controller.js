@@ -90,10 +90,34 @@ const verifyAccount = async (req, res) => {
     try {
         const { email, code } = req.body;
         if (!email || !code) return res.send(new BaseResponse({ msg: `The email & code fields are required`, status: 400, success: false }));
-        const user = await User.findOne({ where: { email } });
+        let user = await User.findOne({ where: { email } });
         if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
         const data = await store.get(user.id);
-        if (!data) return res.send(new BaseResponse({ msg: `The code is not correct`, status: 404, success: false }));
+        if (!data) return res.send(new BaseResponse({ msg: `The code is not correct`, status: 498, success: false }));
+        const now = new Date();
+        if (now > data.expireAt) return res.send(new BaseResponse({ msg: `The code is not expired`, status: 498, success: false }));
+        user.isConfirmed = true;
+        await user.save();
+        res.send(new BaseResponse({ msg: `Your account have been confirmed`, success: true }));
+    } catch (e) {
+        console.log(e);
+        res.send(new BaseResponse({ msg: e, success: false }));
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, code, newPassword } = req.body;
+        if (!email || !code || !newPassword) return res.send(new BaseResponse({ msg: `The (email & code & newPassword) fields are required`, status: 400, success: false }));
+        let user = await User.findOne({ where: { email } });
+        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        const data = await store.get(user.id);
+        if (!data) return res.send(new BaseResponse({ msg: `The code is not correct`, status: 498, success: false }));
+        const now = new Date();
+        if (now > data.expireAt) return res.send(new BaseResponse({ msg: `The code is not expired`, status: 498, success: false }));
+        user.password = newPassword;
+        await user.save();
+        res.send(new BaseResponse({ msg: `Your new password has been set`, success: true }));
     } catch (e) {
         console.log(e);
         res.send(new BaseResponse({ msg: e, success: false }));
@@ -103,6 +127,33 @@ const verifyAccount = async (req, res) => {
 const sendCode = async (req, res) => {
     try {
         const { email } = req.body;
+        if (!email) return res.send(new BaseResponse({ msg: `The email field are required`, status: 400, success: false }));
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        const code = await saveUserCode(user.id);
+        sendMail(email, mailHtml(code, "verify your account"), (e) => {
+            res.send(new BaseResponse({ msg: `There is someting wrong, please try again later`, success: false }));
+        }, (s) => {
+            res.send(new BaseResponse({ msg: `The verify code have been send to the email`, success: true }));
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+    }
+};
+
+const forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.send(new BaseResponse({ msg: `The email field are required`, status: 400, success: false }));
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        const code = await saveUserCode(user.id);
+        sendMail(email, mailHtml(code, "reset your password"), (e) => {
+            res.send(new BaseResponse({ msg: `There is someting wrong, please try again later`, success: false }));
+        }, (s) => {
+            res.send(new BaseResponse({ msg: `The code have been send to the email`, success: true }));
+        });
     } catch (e) {
         console.log(e);
         res.status(400).send(new BaseResponse({ msg: e, success: false }));
@@ -122,7 +173,7 @@ function sendMail(to, text, errorFun, successFun) {
         from: 'foodies.project5@gmail.com',
         to,
         subject: 'Confirm email from Foodies ^_^',
-        text
+        html: text
     };
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -135,9 +186,26 @@ function sendMail(to, text, errorFun, successFun) {
 
 async function saveUserCode(userId) {
     const code = Math.floor(Math.random() * 90000) + 10000;
-    var expireAt = new Date(oldDateObj.getTime() + diff * 60000);
+    var expireAt = new Date(new Date() + 30 * 60000);
     const data = { code, expireAt };
     await store.set(userId, data);
+    return code;
+}
+
+function mailHtml(code, reason) {
+    return `<td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
+    <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
+    <tbody>
+    <tr><td style="padding: 40px 0px 0px;">
+    <div style="text-align: center;"><div style="padding-bottom: 20px;">
+    <img src="https://i.ibb.co/9h7jksF/foodies-logo.png" alt="Foodies" width="100"></div>
+    </div> <div style="padding: 20px; background-color: rgb(255, 255, 255);"><div style="color: rgb(0, 0, 0); text-align: center;">
+    <h1 style="margin: 1rem 0">Verification code</h1>
+    <p style="padding-bottom: 16px">Please use the verification code below to ${reason}.</p><p style="padding-bottom: 16px">
+    <strong style="font-size: 130%">${code}</strong></p>
+    <p style="padding-bottom: 16px">If you didn’t request this, you can ignore this email.</p>
+    <p style="padding-bottom: 16px">Thanks,<br>Foodies team</p></div>
+    </div> <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"></div></td></tr></tbody></table></td>`;
 }
 
 module.exports = {
@@ -146,4 +214,6 @@ module.exports = {
     mailSender,
     verifyAccount,
     sendCode,
+    forgetPassword,
+    resetPassword,
 };
