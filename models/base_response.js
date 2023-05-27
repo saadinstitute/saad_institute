@@ -1,9 +1,10 @@
 class baseResponse {
-    constructor({data = {}, success = true, msg = "", status, pagination}) {
+    constructor({data = {}, success, msg = "", status, pagination}) {
       this.data = data;
       this.success = success;
       this.message = msg;
-      this.status = status ?? success?200:400;
+      if(status === undefined) status = success ? 200 : 400;
+      this.status = status;
       if(typeof pagination !== undefined) this.pagination = pagination;
     }
 }
