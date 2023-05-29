@@ -1,12 +1,10 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const config =  require('../config.js');
 
-// const dbConnection = new Sequelize(process.env.MYSQL_ADDON_URI, { dialect: 'mysql' });
-
-const dbConnection = new Sequelize(process.env.MYSQL_ADDON_DB, process.env.MYSQL_ADDON_USER, process.env.MYSQL_ADDON_PASSWORD, {
+const dbConnection = new Sequelize(config.MYSQL_ADDON_DB, config.MYSQL_ADDON_USER, config.MYSQL_ADDON_PASSWORD, {
     dialect: 'mysql',
-    host: process.env.MYSQL_ADDON_HOST,
-    port: process.env.MYSQL_ADDON_PORT,
+    host: config.MYSQL_ADDON_HOST,
+    port: config.MYSQL_ADDON_PORT,
     define: {
         timestamps: false
     }

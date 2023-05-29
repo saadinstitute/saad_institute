@@ -1,5 +1,4 @@
 const BaseResponse = require('../models/base_response');
-require('dotenv').config();
 
 
 const checkServer = async (req, res) => {

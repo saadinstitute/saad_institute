@@ -2,7 +2,8 @@ const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
-require('dotenv').config();
+// require('dotenv').config();
+const config =  require('../config.js');
 const store = require('store')
 
 
@@ -11,7 +12,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'foodies.project5@gmail.com',
-        pass: process.env.EMAIL_PASS
+        pass: config.EMAIL_PASS
     }
 });
 

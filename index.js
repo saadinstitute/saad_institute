@@ -1,11 +1,11 @@
 const express = require('express');
-require('dotenv').config();
+const config =  require('./config.js');
 const dbConnection = require('./database/db');
 const middleware = require('./others/middleware');
 const userRouter = require('./routes/user.route');
 const appRouter = require('./routes/app.route');
 
-const port = process.env.MYSQL_ADDON_PORT ?? 8080;
+const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
 app.use(express.json());
