@@ -34,7 +34,8 @@ const register = async (req, res) => {
         }
         if (body.type === "user") body.role = "user";
         else if (body.type === "owner") body.role = "admin";
-        else return res.send(new BaseResponse({ success: false, msg: `\"type\" is required (user || owner)` }));
+        else if (body.type === "superAdmin") body.role = "superAdmin";
+        else return res.send(new BaseResponse({ success: false, msg: `"type" is required (user || owner)` }));
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: `success` }));
     } catch (err) {
@@ -63,6 +64,7 @@ const login = async (req, res) => {
         if (app === 3 && user.role !== "superAdmin") {
             return res.send(new BaseResponse({ msg: "This account is not a superAdmin", status: 401, success: false }));
         }
+        if(app < 1 || app > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false }));
         user.password = undefined;
         res.send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: `success` }));
     } catch (e) {

@@ -4,10 +4,11 @@ const router = require('express').Router();
 const BaseResponse = require('../models/base_response');
 
 router.use(function (req = request, res = response, next) {
-    if (['/auth', '/app'].some((word) => req.url.startsWith(word)))
+    const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
+    console.log(url);
+    if (['/auth', '/app', '/upload'].some((word) => url.startsWith(word)))
         return next();
     var token = req.headers['authorization'];
-    console.log(token);
     if (token) {
         jwt.verify(token, process.env.TOKEN_KEY,
             function (err, decoded) {
@@ -20,7 +21,6 @@ router.use(function (req = request, res = response, next) {
                     return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401}));
                 }
                 req.decoded = decoded;
-                console.log(decoded);
                 next();
             });
     } else {
