@@ -9,4 +9,4 @@ const checkServer = async (req, res) => {
 };
 
 
-module.exports = { checkServer , upload};
+module.exports = { checkServer};
