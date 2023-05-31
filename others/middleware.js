@@ -6,7 +6,7 @@ const BaseResponse = require('../models/base_response');
 router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
     console.log(url);
-    if (['/auth', '/app', '/upload', '/temp'].some((word) => url.startsWith(word)))
+    if (['/auth', '/app', '/upload', '/tmp'].some((word) => url.startsWith(word)))
         return next();
     var token = req.headers['authorization'];
     if (token) {
