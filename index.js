@@ -16,6 +16,6 @@ app.use(appRouter);
 app.use(categoryRouter);
 
 app.listen(port,"0.0.0.0", async () => {
-    await dbConnection.sync({force: true});
+    await dbConnection.sync();
     console.log(`Example app listening on port ${port}`)
 })
