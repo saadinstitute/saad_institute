@@ -1,13 +1,12 @@
-const { DataTypes } = require("sequelize");
-
+const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
 
 const Category = dbConnection.define('Categories', {
     id: {
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
-        autoIncrement: true,
+        defaultValue: Sequelize.UUIDV4,
     },
     arName: {
         type: DataTypes.STRING,

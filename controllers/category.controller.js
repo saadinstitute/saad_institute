@@ -27,6 +27,59 @@ const addCategory = async (req, res) => {
     }
 };
 
+const getCategories = async (req, res) => {
+    try {
+        const msg = await validateSuperAdmin(req.headers['authorization']);
+        if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg }));
+        const { pageSize, page} = req.query;
+        const size = Number(pageSize) ?? 10;
+        const start = Number(page) ?? 0;
+        const categories = await Category.findAll({offset: start * size, limit: size});
+        const categoriesCount = await Category.count();
+        res.send(new BaseResponse({ data: categories, success: true, msg: "success", pagination: {total: categoriesCount, page: start, pageSize: size} }));
+    } catch (error) {
+        console.log(error);
+        res.send(new BaseResponse({ success: false, msg: error.message , pagination: {}}));
+    }
+};
+
+const updateCategory = async (req, res) => {
+    try {
+        const msg = await validateSuperAdmin(req.headers['authorization']);
+        if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg }));
+        if(!req.body.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required" }));
+        const category = await Category.findOne({ where:{id: req.body.id}});
+        const {arName, enName, imageUrl} = req.body;
+        category.arName = arName ?? category.arName;
+        category.enName = enName ?? category.enName;
+        category.imageUrl = imageUrl ?? category.imageUrl;
+        await category.save();
+        res.send(new BaseResponse({ data: category, success: true, msg: "updated successfully" }));
+    } catch (error) {
+        console.log(error);
+        res.send(new BaseResponse({ success: false, msg: error.message }));
+    }
+};
+
+const deleteCategory = async (req, res) => {
+    try {
+        const msg = await validateSuperAdmin(req.headers['authorization']);
+        if (msg) 
+            return res.send(new BaseResponse({ success: false, status: 403, msg: msg }));
+        if(!req.params.id) 
+            return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required" }));
+        const id = Number(req.params.id);
+        const category = await Category.findOne({ where:{id}});
+        if(!category) 
+            return res.send(new BaseResponse({ success: false, status: 404, msg: `there is no category with id = ${id}` }));
+        const isSuccess = !(!(await category.destroy()));
+        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"something went wrong" }));
+    } catch (error) {
+        console.log(error);
+        res.send(new BaseResponse({ success: false, msg: error.message }));
+    }
+};
+
 
 function getFileFromReq(req) {
     return new Promise((resolve, reject) => {
@@ -50,4 +103,4 @@ function getFileFromReq(req) {
 }
 
 
-module.exports = { addCategory };
+module.exports = { addCategory, getCategories, updateCategory, deleteCategory };
