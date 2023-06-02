@@ -8,6 +8,7 @@ router.use(function (req = request, res = response, next) {
     if (['/auth', '/app', '/upload'].some((word) => url.startsWith(word)))
         return next();
     var token = req.headers['authorization'];
+    var lang = req.headers['lang'];
     if (token) {
         jwt.verify(token, process.env.TOKEN_KEY,
             function (err, decoded) {
@@ -17,13 +18,13 @@ router.use(function (req = request, res = response, next) {
                         expiredAt: err.expiredAt
                     };
                     console.log(errordata);
-                    return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401}));
+                    return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401,lang}));
                 }
                 req.decoded = decoded;
                 next();
             });
     } else {
-        return res.status(403).send(new BaseResponse({success: false, msg: "Forbidden Access",status: 403}));
+        return res.status(403).send(new BaseResponse({success: false, msg: "There is no token provided",status: 403, lang}));
     }
 });
 

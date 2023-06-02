@@ -2,9 +2,9 @@ const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
-// require('dotenv').config();
-const config =  require('../config.js');
-const store = require('store')
+const config = require('../config.js');
+const store = require('store');
+const { validateSuperAdmin, validateAdmin  } = require("../others/validator");
 
 
 
@@ -16,28 +16,47 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+const users = async (req, res) => {
+    try {
+        const lang = req.headers["lang"];
+        const msg = await validateSuperAdmin(req);
+        if (msg) 
+            return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
+        const { pageSize = 10, page = 0} = req.query;
+        const size = Number(pageSize) ?? 10;
+        const start = Number(page) ?? 0;
+        const users = await User.findAll({offset: start * size, limit: size,attributes: { exclude: ['password'] }});
+        const usersCount = await User.count();
+        res.status(201).send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(new BaseResponse({ msg: err.message??err, success: false, status: 400 }));
+    }
+};
+
 const register = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         req.body.isConfirmed ??= false;
         let body = req.body;
         const emailUser = await User.findOne({ where: { email: body.email } });
         if (emailUser) {
-            return res.send(new BaseResponse({ success: false, msg: "email is Already Exist.", status: 409 }));
+            return res.send(new BaseResponse({ success: false, msg: "email is already exist", status: 409, lang }));
         }
         const userName = await User.findOne({ where: { username: body.username } });
         if (userName) {
-            return res.send(new BaseResponse({ success: false, msg: "username is Already Exist.", status: 409 }));
+            return res.send(new BaseResponse({ success: false, msg: "username is already exist", status: 409, lang }));
         }
         const userNumber = await User.findOne({ where: { mobile: body.mobile } });
         if (userNumber) {
-            return res.send(new BaseResponse({ success: false, msg: "mobile is Already Exist.", status: 409 }));
+            return res.send(new BaseResponse({ success: false, msg: "mobile is already exist", status: 409, lang }));
         }
         if (body.type === "user") body.role = "user";
         else if (body.type === "owner") body.role = "admin";
         else if (body.type === "superAdmin") body.role = "superAdmin";
-        else return res.send(new BaseResponse({ success: false, msg: `"type" is required (user || owner)` }));
+        else return res.send(new BaseResponse({ success: false, msg: `type is required (user || owner)`, lang }));
         const user = await User.create(body);
-        res.status(201).send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: `success` }));
+        res.status(201).send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (err) {
         console.log(err);
         res.status(400).send(new BaseResponse({ msg: err.errors, success: false }));
@@ -46,27 +65,31 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email, password, app } = req.body;
-
+        if (!app) {
+            return res.send(new BaseResponse({ msg: "app field is required", status: 400, success: false, lang }));
+        }
+        const appNum = Number(app);
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.send(new BaseResponse({ msg: "User Not Found", status: 404, success: false }));
+            return res.send(new BaseResponse({ msg: "user not found", status: 404, success: false, lang }));
         }
         if (user.password != password) {
-            return res.send(new BaseResponse({ msg: "Password is not correct", status: 401, success: false }));
+            return res.send(new BaseResponse({ msg: "password is not correct", status: 401, success: false, lang }));
         }
-        if (app === 1 && user.role !== "user") {
-            return res.send(new BaseResponse({ msg: "This account is not a user account", status: 401, success: false }));
+        if (appNum === 1 && user.role !== "user") {
+            return res.send(new BaseResponse({ msg: "this account is not a user account", status: 401, success: false, lang }));
         }
-        if (app === 2 && user.role !== "admin") {
-            return res.send(new BaseResponse({ msg: "This account is not an admin", status: 401, success: false }));
+        if (appNum === 2 && user.role !== "admin") {
+            return res.send(new BaseResponse({ msg: "this account is not an admin", status: 401, success: false, lang }));
         }
-        if (app === 3 && user.role !== "superAdmin") {
-            return res.send(new BaseResponse({ msg: "This account is not a superAdmin", status: 401, success: false }));
+        if (appNum === 3 && user.role !== "superAdmin") {
+            return res.send(new BaseResponse({ msg: "this account is not a superAdmin", status: 401, success: false, lang }));
         }
-        if(app < 1 || app > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false }));
+        if (appNum < 1 || appNum > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false, lang }));
         user.password = undefined;
-        res.send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: `success` }));
+        res.send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (e) {
         console.log(e);
         res.status(400).send(new BaseResponse({ msg: e, success: false }));
@@ -75,69 +98,73 @@ const login = async (req, res) => {
 
 const mailSender = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email } = req.body;
-        sendMail(email, "This is test email from backend", (error) => {
+        sendMail(email, "this is test email from backend", (error) => {
             console.log(error);
-            res.status(400).send(new BaseResponse({ msg: error, success: false }));
+            res.status(400).send(new BaseResponse({ msg: error, success: false, lang }));
         }, (info) => {
             console.log(info);
-            res.send(new BaseResponse({ data: { info }, success: true, msg: "success sending email" }));
+            res.send(new BaseResponse({ data: { info }, success: true, msg: "success", lang }));
         });
     } catch (e) {
         console.log(e);
-        res.send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false }));
     }
 };
 
 const verifyAccount = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email, code } = req.body;
-        if (!email || !code) return res.send(new BaseResponse({ msg: `The email & code fields are required`, status: 400, success: false }));
+        if (!email || !code) return res.send(new BaseResponse({ msg: "the email & code fields are required", status: 400, success: false, lang }));
         let user = await User.findOne({ where: { email } });
-        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        if (!user) return res.send(new BaseResponse({ msg: `there is no account with this email`, status: 404, success: false, lang }));
         const data = await store.get(user.id);
-        if (!data) return res.send(new BaseResponse({ msg: `The code is not correct`, status: 498, success: false }));
+        if (!data) return res.send(new BaseResponse({ msg: "the code is not correct", status: 498, success: false, lang }));
         const now = new Date();
-        if (now > data.expireAt) return res.send(new BaseResponse({ msg: `The code is not expired`, status: 498, success: false }));
+        if (now > data.expireAt) return res.send(new BaseResponse({ msg: "the code is not expired", status: 498, success: false, lang }));
         user.isConfirmed = true;
         await user.save();
-        res.send(new BaseResponse({ msg: `Your account have been confirmed`, success: true }));
+        res.send(new BaseResponse({ msg: "your account have been confirmed", success: true, lang }));
     } catch (e) {
         console.log(e);
-        res.send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false }));
     }
 };
 
 const resetPassword = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email, code, newPassword } = req.body;
-        if (!email || !code || !newPassword) return res.send(new BaseResponse({ msg: `The (email & code & newPassword) fields are required`, status: 400, success: false }));
+        if (!email || !code || !newPassword) return res.send(new BaseResponse({ msg: `the (email & code & newPassword) fields are required`, lang, status: 400, success: false }));
         let user = await User.findOne({ where: { email } });
-        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        if (!user) return res.send(new BaseResponse({ msg: `there is no account with this email`, status: 404, success: false, lang }));
         const data = await store.get(user.id);
-        if (!data) return res.send(new BaseResponse({ msg: `The code is not correct`, status: 498, success: false }));
+        if (!data) return res.send(new BaseResponse({ msg: `the code is not correct`, status: 498, success: false, lang }));
         const now = new Date();
-        if (now > data.expireAt) return res.send(new BaseResponse({ msg: `The code is not expired`, status: 498, success: false }));
+        if (now > data.expireAt) return res.send(new BaseResponse({ msg: `the code is not expired`, status: 498, success: false, lang }));
         user.password = newPassword;
         await user.save();
-        res.send(new BaseResponse({ msg: `Your new password has been set`, success: true }));
+        res.send(new BaseResponse({ msg: `your new password has been set`, success: true, lang }));
     } catch (e) {
         console.log(e);
-        res.send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false }));
     }
 };
 
 const sendCode = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email } = req.body;
-        if (!email) return res.send(new BaseResponse({ msg: `The email field are required`, status: 400, success: false }));
+        if (!email) return res.send(new BaseResponse({ msg: `the email field is required`, status: 400, success: false, lang }));
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        if (!user) return res.send(new BaseResponse({ msg: `there is no account with this email`, status: 404, success: false, lang }));
         const code = await saveUserCode(user.id);
         sendMail(email, mailHtml(code, "verify your account"), (e) => {
-            res.send(new BaseResponse({ msg: `There is someting wrong, please try again later`, success: false }));
+            res.send(new BaseResponse({ msg: `there is someting wrong, please try again later`, success: false, lang }));
         }, (s) => {
-            res.send(new BaseResponse({ msg: `The verify code have been send to the email`, success: true }));
+            res.send(new BaseResponse({ msg: `the verify code have been send to the email`, success: true, lang }));
         });
     } catch (e) {
         console.log(e);
@@ -147,15 +174,16 @@ const sendCode = async (req, res) => {
 
 const forgetPassword = async (req, res) => {
     try {
+        const lang = req.headers["lang"];
         const { email } = req.body;
-        if (!email) return res.send(new BaseResponse({ msg: `The email field are required`, status: 400, success: false }));
+        if (!email) return res.send(new BaseResponse({ msg: "the email field is required", status: 400, success: false, lang }));
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.send(new BaseResponse({ msg: `There is no account with this email ${email}`, status: 404, success: false }));
+        if (!user) return res.send(new BaseResponse({ msg: "there is no account with this email", status: 404, success: false, lang }));
         const code = await saveUserCode(user.id);
         sendMail(email, mailHtml(code, "reset your password"), (e) => {
-            res.send(new BaseResponse({ msg: `There is someting wrong, please try again later`, success: false }));
+            res.send(new BaseResponse({ msg: "there is someting wrong, please try again later", success: false, lang }));
         }, (s) => {
-            res.send(new BaseResponse({ msg: `The code have been send to the email`, success: true }));
+            res.send(new BaseResponse({ msg: "the code have been send to the email", success: true, lang }));
         });
     } catch (e) {
         console.log(e);
@@ -219,4 +247,5 @@ module.exports = {
     sendCode,
     forgetPassword,
     resetPassword,
+    users,
 };
