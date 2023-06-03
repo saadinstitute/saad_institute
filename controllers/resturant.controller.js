@@ -74,7 +74,7 @@ const deleteResturant = async (req, res) => {
         const lang = req.headers["lang"];
         const user = await validateAdmin(req);
         if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
-        const id = Number(req.params.id);
+        const id = req.params.id;
         const resturant = await Resturant.findOne({ where:{ id }});
         if(!resturant) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no resturant with the id", lang }));
         if(user.role !== "superAdmin" && resturant.userId !== user.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't delete this resturant", lang }));
