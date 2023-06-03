@@ -62,7 +62,7 @@ const deleteCategory = async (req, res) => {
             return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
         if(!req.params.id) 
             return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
-        const id = Number(req.params.id);
+        const id = req.params.id;
         const category = await Category.findOne({ where:{id}});
         if(!category) 
             return res.send(new BaseResponse({ success: false, status: 404, msg: `there is no category with the id`, lang }));
