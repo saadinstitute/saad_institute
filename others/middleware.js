@@ -2,6 +2,7 @@ const { request, response } = require('express');
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 const BaseResponse = require('../models/base_response');
+const User = require('../models/users');
 
 router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
@@ -11,7 +12,7 @@ router.use(function (req = request, res = response, next) {
     var lang = req.headers['lang'];
     if (token) {
         jwt.verify(token, process.env.TOKEN_KEY,
-            function (err, decoded) {
+            async function (err, decoded) {
                 if (err) {
                     let errordata = {
                         message: err.message,
@@ -21,6 +22,8 @@ router.use(function (req = request, res = response, next) {
                     return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401,lang}));
                 }
                 req.decoded = decoded;
+                const user = await User.findOne({where : { id: decoded.user_id }});
+                if(!user) return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401,lang}));
                 next();
             });
     } else {

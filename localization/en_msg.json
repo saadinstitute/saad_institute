@@ -27,5 +27,6 @@
     "you can't edit this resturant":"You can't edit this resturant",
     "you can't delete this resturant":"You can't delete this resturant",
     "there is no resturant with the id":"There is no resturant with the id",
-    "userId field is required":"\"userId\" field is required"
+    "userId field is required":"\"userId\" field is required",
+    "you can't delete your account":"you can't delete your account"
 }

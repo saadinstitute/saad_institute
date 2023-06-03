@@ -9,5 +9,6 @@ router.post('/auth/sendCode', userController.sendCode);
 router.post('/auth/forgetPassword', userController.forgetPassword);
 router.post('/auth/resetPassword', userController.resetPassword);
 router.get('/users', userController.users);
+router.delete('/user/:id', userController.deleteUser);
 
 module.exports = router;

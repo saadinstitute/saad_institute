@@ -7,7 +7,6 @@ const store = require('store');
 const { validateSuperAdmin, validateAdmin  } = require("../others/validator");
 
 
-
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -76,16 +75,16 @@ const login = async (req, res) => {
             return res.send(new BaseResponse({ msg: "user not found", status: 404, success: false, lang }));
         }
         if (user.password != password) {
-            return res.send(new BaseResponse({ msg: "password is not correct", status: 401, success: false, lang }));
+            return res.send(new BaseResponse({ msg: "password is not correct", status: 403, success: false, lang }));
         }
         if (appNum === 1 && user.role !== "user") {
-            return res.send(new BaseResponse({ msg: "this account is not a user account", status: 401, success: false, lang }));
+            return res.send(new BaseResponse({ msg: "this account is not a user account", status: 403, success: false, lang }));
         }
         if (appNum === 2 && user.role !== "admin") {
-            return res.send(new BaseResponse({ msg: "this account is not an admin", status: 401, success: false, lang }));
+            return res.send(new BaseResponse({ msg: "this account is not an admin", status: 403, success: false, lang }));
         }
         if (appNum === 3 && user.role !== "superAdmin") {
-            return res.send(new BaseResponse({ msg: "this account is not a superAdmin", status: 401, success: false, lang }));
+            return res.send(new BaseResponse({ msg: "this account is not a superAdmin", status: 403, success: false, lang }));
         }
         if (appNum < 1 || appNum > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false, lang }));
         user.password = undefined;
@@ -191,6 +190,25 @@ const forgetPassword = async (req, res) => {
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        const lang = req.headers["lang"];
+        const msg = await validateSuperAdmin(req);
+        const reqestedBy = await validateUser(req);
+        if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
+        if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
+        const id = Number(req.params.id);
+        const user = await User.findOne({ where:{ id }});
+        if(!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
+        if(reqestedBy.id !== user.id) return res.send(new BaseResponse({ success: false, status: 404, msg: "you can't delete your account", lang }));
+        const isSuccess = !(!(await resturant.destroy()));
+        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error }));
+    }
+};
+
 function generateToken(user_id) {
     const token = jwt.sign(
         { user_id },
@@ -248,4 +266,5 @@ module.exports = {
     forgetPassword,
     resetPassword,
     users,
+    deleteUser,
 };
