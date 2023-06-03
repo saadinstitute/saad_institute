@@ -48,14 +48,18 @@ const getResturants = async (req, res) => {
 const updateResturant = async (req, res) => {
     try {
         const lang = req.headers["lang"];
+        const data = await getFormFromReq(req);
         const user = await validateAdmin(req);
-        if(!req.body.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
-        const resturant = await Resturant.findOne({ where:{id: req.body.id}});
+        if(!data.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
+        const resturant = await Resturant.findOne({ where:{id: data.id}});
+        if(data.image) {
+            const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
+            resturant.imageUrl = resCloudinary.url ?? resturant.imageUrl;
+        }
         if(user.role !== "superAdmin" && resturant.userId !== user.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this resturant", lang }));
-        const {arName, enName, imageUrl, enAddress, arAddress, openAt, closeAt, mobile} = req.body;
+        const {arName, enName, enAddress, arAddress, openAt, closeAt, mobile} = data;
         resturant.arName = arName ?? resturant.arName;
         resturant.enName = enName ?? resturant.enName;
-        resturant.imageUrl = imageUrl ?? resturant.imageUrl;
         resturant.enAddress = enAddress ?? resturant.enAddress;
         resturant.arAddress = arAddress ?? resturant.arAddress;
         resturant.openAt = openAt ?? resturant.openAt;
@@ -82,7 +86,7 @@ const deleteResturant = async (req, res) => {
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error }));
+        res.status(400).send(new BaseResponse({ success: false, msg: `${typeof error}: ${error.message ?? error}` }));
     }
 };
 
