@@ -11,7 +11,7 @@ const checkServer = async (req, res) => {
 
 const showDashboard = async (req, res) => {
     try {
-        res.sendFile("C:\\Users\\mahmo\\Desktop\\food-backend\\web\\index.html");
+        res.sendFile(process.cwd()+"\\web\\index.html");
     } catch (error) {
         console.log(error)
         res.send(new BaseResponse({success: false, msg: error}));
