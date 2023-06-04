@@ -197,7 +197,7 @@ const deleteUser = async (req, res) => {
         const reqestedBy = await validateUser(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
         if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
-        const id = Number(req.params.id);
+        const id = req.params.id;
         const user = await User.findOne({ where:{ id }});
         if(!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
         if(reqestedBy.id !== user.id) return res.send(new BaseResponse({ success: false, status: 404, msg: "you can't delete your account", lang }));
