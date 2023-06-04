@@ -6,6 +6,7 @@ const userRouter = require('./routes/user.route');
 const appRouter = require('./routes/app.route');
 const categoryRouter = require('./routes/category.route.js');
 const resturantRouter = require('./routes/resturant.route.js');
+const dashboardRouter = require('./routes/dashboard.route.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
@@ -16,6 +17,7 @@ app.use(userRouter);
 app.use(appRouter);
 app.use(categoryRouter);
 app.use(resturantRouter);
+app.use(dashboardRouter);
 
 app.listen(port,"0.0.0.0", async () => {
     await dbConnection.sync();
