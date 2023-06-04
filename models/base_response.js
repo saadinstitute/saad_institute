@@ -5,7 +5,7 @@ class baseResponse {
     constructor({data = {}, success, msg = "", lang = "en", status, pagination}) {
       this.data = data;
       this.success = success;
-      this.messages = {
+      this.message = {
         ar: arMsg[msg] ?? msg,
         en: enMsg[msg] ?? msg
       }[lang];
