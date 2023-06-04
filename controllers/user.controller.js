@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
 const config = require('../config.js');
 const store = require('store');
-const { validateSuperAdmin, validateAdmin  } = require("../others/validator");
+const { validateSuperAdmin, validateUser  } = require("../others/validator");
 
 
 const transporter = nodemailer.createTransport({
