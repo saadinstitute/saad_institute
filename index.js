@@ -11,7 +11,7 @@ const dashboardRouter = require('./routes/dashboard.route.js');
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
-app.use(express.static(__dirname+"/web"));
+// app.use(express.static(__dirname+"/web"));
 
 app.use(express.json());
 app.use(middleware);

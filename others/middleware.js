@@ -6,7 +6,7 @@ const User = require('../models/users');
 
 router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-    if (['/auth', '/app', '/upload', '/web'].some((word) => url.startsWith(word)))
+    if (['/auth', '/app', '/upload'].some((word) => url.startsWith(word)))
         return next();
     var token = req.headers['authorization'];
     var lang = req.headers['lang'];
