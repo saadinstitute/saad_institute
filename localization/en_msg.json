@@ -32,5 +32,7 @@
     "you can't delete your account":"you can't delete your account",
     "mobile must be unique":"Mobile is used already",
     "arName must be unique":"Arabic name is used already",
-    "enName must be unique":"English name is used already"
+    "enName must be unique":"English name is used already",
+    "username must be unique":"Username is used already",
+    "email must be unique":"Email is used already"
 }

@@ -20,7 +20,7 @@ const Meal = dbConnection.define('Meals', {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-            model: 'Categorys',
+            model: 'Categories',
             key: 'id'
         }
     },
