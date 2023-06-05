@@ -62,6 +62,26 @@ const register = async (req, res) => {
     }
 };
 
+const addUser = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const msg = await validateSuperAdmin(req);
+        if (msg) {
+            return res.send(new BaseResponse({ success: false, msg: msg, status: 401, lang }));
+        }
+        let body = req.body;
+        if (body.type === "user") body.role = "user";
+        else if (body.type === "owner") body.role = "admin";
+        else if (body.type === "superAdmin") body.role = "superAdmin";
+        else return res.send(new BaseResponse({ success: false, msg: "type is required (user || owner)", lang }));
+        const user = await User.create(body);
+        res.status(201).send(new BaseResponse({ data: user, success: true, msg: "success", lang }));
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(new BaseResponse({ msg: err, success: false, lang }));
+    }
+};
+
 const login = async (req, res) => {
     const lang = req.headers["lang"];
     try {
@@ -267,4 +287,5 @@ module.exports = {
     resetPassword,
     users,
     deleteUser,
+    addUser,
 };
