@@ -5,8 +5,8 @@ const formidable = require('formidable');
 const { validateSuperAdmin } = require("../others/validator");
 
 const addCategory = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const data = await getFileFromReq(req);
         const msg = await validateSuperAdmin(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
@@ -16,13 +16,13 @@ const addCategory = async (req, res) => {
         res.send(new BaseResponse({ data: category, success: true, msg: "success" }));
     } catch (error) {
         // console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 
 const getCategories = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { pageSize, page} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
@@ -31,13 +31,13 @@ const getCategories = async (req, res) => {
         res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang, pagination: {total: categoriesCount, page: start, pageSize: size} }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message , pagination: {}}));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 
 const updateCategory = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const data = await getFileFromReq(req);
         const msg = await validateSuperAdmin(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
@@ -54,13 +54,13 @@ const updateCategory = async (req, res) => {
         res.send(new BaseResponse({ data: category, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 
 const deleteCategory = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const msg = await validateSuperAdmin(req);
         if (msg) 
             return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
@@ -74,7 +74,7 @@ const deleteCategory = async (req, res) => {
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 

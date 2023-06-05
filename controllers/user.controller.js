@@ -16,11 +16,11 @@ const transporter = nodemailer.createTransport({
 });
 
 const users = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const msg = await validateSuperAdmin(req);
         if (msg) 
-            return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
+            return res.send(new BaseResponse({ success: false, status: 403, msg, lang }));
         const { pageSize = 10, page = 0} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
@@ -29,13 +29,13 @@ const users = async (req, res) => {
         res.status(201).send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
     } catch (err) {
         console.log(err);
-        res.status(400).send(new BaseResponse({ msg: err.message??err, success: false, status: 400 }));
+        res.status(400).send(new BaseResponse({ msg: err, success: false, status: 400, lang }));
     }
 };
 
 const register = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         req.body.isConfirmed ??= false;
         let body = req.body;
         const emailUser = await User.findOne({ where: { email: body.email } });
@@ -58,13 +58,13 @@ const register = async (req, res) => {
         res.status(201).send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (err) {
         console.log(err);
-        res.status(400).send(new BaseResponse({ msg: err.errors, success: false }));
+        res.status(400).send(new BaseResponse({ msg: err, success: false, lang }));
     }
 };
 
 const login = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { email, password, app } = req.body;
         if (!app) {
             return res.send(new BaseResponse({ msg: "app field is required", status: 400, success: false, lang }));
@@ -91,13 +91,13 @@ const login = async (req, res) => {
         res.send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false, lang }));
     }
 };
 
 const mailSender = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { email } = req.body;
         sendMail(email, "this is test email from backend", (error) => {
             console.log(error);
@@ -108,13 +108,13 @@ const mailSender = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false, lang }));
     }
 };
 
 const verifyAccount = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { email, code } = req.body;
         if (!email || !code) return res.send(new BaseResponse({ msg: "the email & code fields are required", status: 400, success: false, lang }));
         let user = await User.findOne({ where: { email } });
@@ -128,13 +128,13 @@ const verifyAccount = async (req, res) => {
         res.send(new BaseResponse({ msg: "your account have been confirmed", success: true, lang }));
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false, lang }));
     }
 };
 
 const resetPassword = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { email, code, newPassword } = req.body;
         if (!email || !code || !newPassword) return res.send(new BaseResponse({ msg: `the (email & code & newPassword) fields are required`, lang, status: 400, success: false }));
         let user = await User.findOne({ where: { email } });
@@ -148,13 +148,13 @@ const resetPassword = async (req, res) => {
         res.send(new BaseResponse({ msg: `your new password has been set`, success: true, lang }));
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false, lang }));
     }
 };
 
 const sendCode = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const { email } = req.body;
         if (!email) return res.send(new BaseResponse({ msg: `the email field is required`, status: 400, success: false, lang }));
         const user = await User.findOne({ where: { email } });
@@ -167,7 +167,7 @@ const sendCode = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        res.status(400).send(new BaseResponse({ msg: e, success: false }));
+        res.status(400).send(new BaseResponse({ msg: e, success: false, lang }));
     }
 };
 
@@ -191,8 +191,8 @@ const forgetPassword = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const msg = await validateSuperAdmin(req);
         const reqestedBy = await validateUser(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
@@ -205,7 +205,7 @@ const deleteUser = async (req, res) => {
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 

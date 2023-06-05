@@ -5,8 +5,8 @@ const formidable = require('formidable');
 const { validateAdmin, validateUser  } = require("../others/validator");
 
 const addResturant = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const data = await getFormFromReq(req);
         const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile } = data;
         let {userId} = data;
@@ -18,13 +18,13 @@ const addResturant = async (req, res) => {
         res.send(new BaseResponse({ data: category, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error}));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang}));
     }
 };
 
 const getResturants = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const user = await validateUser(req);
         const { pageSize = 10, page = 0} = req.query;
         const size = Number(pageSize) ?? 10;
@@ -41,13 +41,13 @@ const getResturants = async (req, res) => {
         res.send(new BaseResponse({ data: resturants, success: true, msg: "success", lang, pagination: {total: resturantsCount, page: start, pageSize: size} }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error , pagination: {}}));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang}));
     }
 };
 
 const updateResturant = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const data = await getFormFromReq(req);
         const user = await validateAdmin(req);
         if(!data.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
@@ -69,13 +69,13 @@ const updateResturant = async (req, res) => {
         res.send(new BaseResponse({ data: resturant, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error.message ?? error }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 
 const deleteResturant = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         const user = await validateAdmin(req);
         if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
         const id = req.params.id;
@@ -86,7 +86,7 @@ const deleteResturant = async (req, res) => {
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: `${typeof error}: ${error.message ?? error}` }));
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 

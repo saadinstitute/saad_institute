@@ -1,22 +1,13 @@
 const BaseResponse = require('../models/base_response');
 
 const checkServer = async (req, res) => {
+    const lang = req.headers["lang"];
     try {
-        const lang = req.headers["lang"];
         res.send(new BaseResponse({data: {},success: true, msg: "success",lang}));
     } catch (error) {
         res.send(new BaseResponse({success: false, msg: error, lang}));
     }
 };
 
-const showDashboard = async (req, res) => {
-    try {
-        res.sendFile(__dirname+"/web/index.html");
-    } catch (error) {
-        console.log(error)
-        res.send(new BaseResponse({success: false, msg: error}));
-    }
-};
 
-
-module.exports = { checkServer, showDashboard};
+module.exports = { checkServer};

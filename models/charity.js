@@ -10,11 +10,13 @@ const Charity = dbConnection.define('Charities', {
     },
     arName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     enName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     mobile: {
         type: DataTypes.STRING,

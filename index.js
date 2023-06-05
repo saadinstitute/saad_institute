@@ -24,6 +24,6 @@ app.use(dashboardRouter);
 app.use(charityRouter);
 
 app.listen(port,"0.0.0.0", async () => {
-    await dbConnection.sync();
+    await dbConnection.sync({alter: false});
     console.log(`Example app listening on port ${port}`)
 })
