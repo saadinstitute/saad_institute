@@ -38,11 +38,12 @@ const getCategories = async (req, res) => {
 const updateCategory = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const data = await getFileFromReq(req);
         const msg = await validateSuperAdmin(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
+        const data = await getFileFromReq(req);
         if(!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
         const category = await Category.findOne({ where:{id: data.id}});
+        if(!category) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no category with the id", lang }));
         if(data.image) {
             const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
             category.imageUrl = resCloudinary.url ?? category.imageUrl;
