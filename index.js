@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const config =  require('./config.js');
 const dbConnection = require('./database/db');
 const middleware = require('./others/middleware');
@@ -14,7 +15,9 @@ const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
 // app.use(express.static(__dirname+"/web"));
-
+app.use(cors({
+    origin: "*"
+}));
 app.use(express.json());
 app.use(middleware);
 app.use(userRouter);
