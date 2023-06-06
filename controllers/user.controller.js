@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
 const config = require('../config.js');
 const store = require('store');
+const formidable = require('formidable');
 const { validateSuperAdmin, validateUser  } = require("../others/validator");
 
 
@@ -65,15 +66,20 @@ const register = async (req, res) => {
 const addUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
+        const data = await getFormFromReq(req);
         const msg = await validateSuperAdmin(req);
         if (msg) {
             return res.send(new BaseResponse({ success: false, msg: msg, status: 401, lang }));
         }
-        let body = req.body;
+        let body = data;
         if (body.type === "user") body.role = "user";
         else if (body.type === "owner") body.role = "admin";
         else if (body.type === "superAdmin") body.role = "superAdmin";
         else return res.send(new BaseResponse({ success: false, msg: "type is required (user || owner)", lang }));
+        if (body.image) {
+            const resCloudinary = await cloudinary.uploader.upload(body.image.filepath);
+            body.imageUrl = resCloudinary.url;
+        }
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: user, success: true, msg: "success", lang }));
     } catch (err) {
@@ -275,6 +281,19 @@ function mailHtml(code, reason) {
     <p style="padding-bottom: 16px">If you didn’t request this, you can ignore this email.</p>
     <p style="padding-bottom: 16px">Thanks,<br>Foodies team</p></div>
     </div> <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"></div></td></tr></tbody></table></td>`;
+}
+
+function getFormFromReq(req) {
+    return new Promise((resolve, reject) => {
+        const form = formidable({ multiples: true });
+        form.parse(req, (error, fields, files) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve({ ...fields, ...files });
+        });
+    });
 }
 
 module.exports = {

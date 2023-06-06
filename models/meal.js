@@ -24,6 +24,14 @@ const Meal = dbConnection.define('Meals', {
             key: 'id'
         }
     },
+    resturantId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+            model: 'Resturants',
+            key: 'id'
+        }
+    },
     imageUrl: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -35,11 +43,20 @@ const Meal = dbConnection.define('Meals', {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
-    arAddress: {
+    discount: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        defaultValue: 0.0,
+        validate: {
+            min: 0.0,
+            max: 100.0
+        }
+    },
+    arDescription: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    enAddress: {
+    enDescription: {
         type: DataTypes.STRING,
         allowNull: true
     }

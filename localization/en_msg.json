@@ -34,5 +34,11 @@
     "arName must be unique":"Arabic name is used already",
     "enName must be unique":"English name is used already",
     "username must be unique":"Username is used already",
-    "email must be unique":"Email is used already"
+    "email must be unique":"Email is used already",
+    "category not found":"Category not found",
+    "resturant not found":"Resturant not found",
+    "meal not found":"Meal not found",
+    "you don't have permission to add a meal to this restuarnt":"You don't have permission to add a meal to this restuarnt",
+    "you don't have permission to edit this meal":"You don't have permission to edit this meal",
+    "you can't delete this meal":"You can't delete this meal"
 }
