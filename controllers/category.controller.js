@@ -49,8 +49,8 @@ const updateCategory = async (req, res) => {
             category.imageUrl = resCloudinary.url ?? category.imageUrl;
         }
         const { arName, enName } = data;
-        category.arName = arName !== "" ? arName : category.arName;
-        category.enName = enName !== "" ? enName : category.enName;
+        if(arName && arName !== "") category.arName = arName;
+        if(enName && enName !== "") category.enName = enName;
         await category.save();
         res.send(new BaseResponse({ data: category, success: true, msg: "updated successfully", lang }));
     } catch (error) {

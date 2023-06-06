@@ -58,13 +58,13 @@ const updateResturant = async (req, res) => {
         }
         if(user.role !== "superAdmin" && resturant.userId !== user.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this resturant", lang }));
         const {arName, enName, enAddress, arAddress, openAt, closeAt, mobile} = data;
-        resturant.arName = arName !== "" ? arName : resturant.arName;
-        resturant.enName = enName !== "" ? enName : resturant.enName;
-        resturant.enAddress = enAddress !== "" ? enAddress : resturant.enAddress;
-        resturant.arAddress = arAddress !== "" ? arAddress : resturant.arAddress;
-        resturant.openAt = openAt !== "" ? openAt : resturant.openAt;
-        resturant.closeAt = closeAt !== "" ? closeAt : resturant.closeAt;
-        resturant.mobile = mobile !== "" ? mobile : resturant.mobile;
+        if(arName && arName !== "") resturant.arName =  arName;
+        if(enName && enName !== "") resturant.enName = enName;
+        if(enAddress && enAddress !== "") resturant.enAddress = enAddress;
+        if(arAddress && arAddress !== "") resturant.arAddress = arAddress;
+        if(openAt && openAt !== "") resturant.openAt = openAt;
+        if(closeAt && closeAt !== "") resturant.closeAt = closeAt;
+        if(mobile && mobile !== "") resturant.mobile = mobile;
         await resturant.save();
         res.send(new BaseResponse({ data: resturant, success: true, msg: "updated successfully", lang }));
     } catch (error) {

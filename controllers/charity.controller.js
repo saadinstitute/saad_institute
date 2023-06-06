@@ -42,11 +42,11 @@ const updateCharity = async (req, res) => {
         if(!data.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
         const charity = await Charity.findOne({ where:{id: data.id}});
         const {arName, enName, enAddress, arAddress, mobile} = data;
-        charity.arName = arName ?? charity.arName;
-        charity.enName = enName ?? charity.enName;
-        charity.enAddress = enAddress ?? charity.enAddress;
-        charity.arAddress = arAddress ?? charity.arAddress;
-        charity.mobile = mobile ?? charity.mobile;
+        if(arName && arName !== "") charity.arName = arName;
+        if(enName && enName !== "") charity.enName = enName;
+        if(enAddress && enAddress !== "") charity.enAddress = enAddress;
+        if(arAddress && arAddress !== "") charity.arAddress = arAddress;
+        if(mobile && mobile !== "") charity.mobile = mobile;
         await charity.save();
         res.send(new BaseResponse({ data: charity, success: true, msg: "updated successfully", lang }));
     } catch (error) {
