@@ -27,7 +27,7 @@ const addMeal = async (req, res) => {
             const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
             imageUrl = resCloudinary.url;
         }
-        const meal = await Meal.create({ imageUrl, arName, enName, enDescription, arDescription, price, discount, resturantId, categoryId });
+        const meal = await Meal.create({ imageUrl, arName, enName, enDescription, arDescription, price: Number(price), discount: Number(discount), resturantId, categoryId });
         res.send(new BaseResponse({ data: meal, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
