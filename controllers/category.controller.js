@@ -23,12 +23,12 @@ const addCategory = async (req, res) => {
 const getCategories = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize, page} = req.query;
+        const { pageSize, page } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        const categories = await Category.findAll({offset: start * size, limit: size});
+        const categories = await Category.findAll({ offset: start * size, limit: size });
         const categoriesCount = await Category.count();
-        res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang, pagination: {total: categoriesCount, page: start, pageSize: size} }));
+        res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang, pagination: { total: categoriesCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -41,16 +41,20 @@ const updateCategory = async (req, res) => {
         const msg = await validateSuperAdmin(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
         const data = await getFileFromReq(req);
-        if(!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
-        const category = await Category.findOne({ where:{id: data.id}});
-        if(!category) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no category with the id", lang }));
-        if(data.image) {
+        if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
+        const category = await Category.findOne({ where: { id: data.id } });
+        if (!category) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no category with the id", lang }));
+        if (data.image) {
             const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
             category.imageUrl = resCloudinary.url ?? category.imageUrl;
         }
-        const {arName, enName} = data;
-        category.arName = arName ?? category.arName;
-        category.enName = enName ?? category.enName;
+        const { arName, enName } = data;
+        if (arName !== "") {
+            category.arName = arName;
+        }
+        if (enName !== "") {
+            category.enName = enName;
+        }
         await category.save();
         res.send(new BaseResponse({ data: category, success: true, msg: "updated successfully", lang }));
     } catch (error) {
@@ -63,16 +67,16 @@ const deleteCategory = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const msg = await validateSuperAdmin(req);
-        if (msg) 
+        if (msg)
             return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
-        if(!req.params.id) 
+        if (!req.params.id)
             return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
         const id = req.params.id;
-        const category = await Category.findOne({ where:{id}});
-        if(!category) 
+        const category = await Category.findOne({ where: { id } });
+        if (!category)
             return res.send(new BaseResponse({ success: false, status: 404, msg: `there is no category with the id`, lang }));
         const isSuccess = !(!(await category.destroy()));
-        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
+        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess ? "deleted successfully" : "there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
