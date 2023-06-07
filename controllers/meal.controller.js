@@ -45,10 +45,11 @@ const getMeals = async (req, res) => {
         let meals;
         let mealsCount;
         if (resturantId) {
-            meals = await Meal.findAll({ where: { resturantId }, offset: start * size, limit: size });
-            mealsCount = await Meal.count({ where: { resturantId } });
+            const data = await Meal.findAndCountAll({ where: { resturantId }, offset: start * size, limit: size});
+            this.meals = data.rows;
+            this.mealsCount = data.count;
         } else {
-            meals = await Meal.findAll({ offset: start * size, limit: size });
+            meals = await Meal.findAll({ offset: start * size, limit: size});
             mealsCount = await Meal.count();
         }
         res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));

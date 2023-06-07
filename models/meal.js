@@ -1,5 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
+const Category = require("./category");
+const Resturant = require("./resturant");
 
 const Meal = dbConnection.define('Meals', {
     id: {
@@ -61,5 +63,8 @@ const Meal = dbConnection.define('Meals', {
         allowNull: true
     }
 });
+
+
+// Meal.belongsTo(Category, {foreignKey: 'id'});
 
 module.exports = Meal;

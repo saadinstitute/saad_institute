@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
+const Meal = require("./meal");
 
 const Resturant = dbConnection.define('Resturants', {
     id: {
@@ -53,5 +54,7 @@ const Resturant = dbConnection.define('Resturants', {
         allowNull: true
     }
 });
+
+// Resturant.hasMany(Meal);
 
 module.exports = Resturant;
