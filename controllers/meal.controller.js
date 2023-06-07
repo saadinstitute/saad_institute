@@ -45,9 +45,8 @@ const getMeals = async (req, res) => {
         let meals;
         let mealsCount;
         if (resturantId) {
-            const data = await Meal.findAndCountAll({ where: { resturantId }, offset: start * size, limit: size});
-            this.meals = data.rows;
-            this.mealsCount = data.count;
+            meals = await Meal.findAll({ where: { resturantId }, offset: start * size, limit: size});
+            mealsCount = await Meal.count({ where: { resturantId }, offset: start * size, limit: size});
         } else {
             meals = await Meal.findAll({ offset: start * size, limit: size});
             mealsCount = await Meal.count();
