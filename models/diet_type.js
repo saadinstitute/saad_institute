@@ -2,7 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const uuid = require('uuid');
 const dbConnection = require("../database/db");
 
-const DietType = dbConnection.define('DietTypes', {
+const DietType = dbConnection.define('dietType', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,

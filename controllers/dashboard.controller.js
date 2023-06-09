@@ -1,7 +1,7 @@
 const BaseResponse = require('../models/base_response');
 const Category = require('../models/category');
 const Resturant = require('../models/resturant');
-const User = require('../models/users');
+const User = require('../models/user');
 const Meal = require('../models/meal');
 const Charity = require('../models/meal');
 

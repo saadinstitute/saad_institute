@@ -10,15 +10,28 @@ const resturantRouter = require('./routes/resturant.route.js');
 const dashboardRouter = require('./routes/dashboard.route.js');
 const charityRouter = require('./routes/charity.route.js');
 const mealRouter = require('./routes/meal.route.js');
+const Meal = require('./models/meal.js');
+const Category = require('./models/category.js');
+const Resturant = require('./models/resturant.js');
+const User = require('./models/user.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
-// app.use(express.static(__dirname+"/web"));
 app.use(cors({
     origin: "*"
 }));
 app.use(express.json());
+
+
+
+Category.hasMany(Meal);
+Resturant.hasMany(Meal);
+User.hasMany(Resturant);
+Meal.belongsTo(Resturant);
+Resturant.belongsTo(User);
+Meal.belongsTo(Category);
+
 app.use(middleware);
 app.use(userRouter);
 app.use(appRouter);

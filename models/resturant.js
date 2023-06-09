@@ -1,8 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
-const Meal = require("./meal");
 
-const Resturant = dbConnection.define('Resturants', {
+const Resturant = dbConnection.define('resturant', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,
@@ -17,14 +16,14 @@ const Resturant = dbConnection.define('Resturants', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    userId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-            model: 'Users',
-            key: 'id'
-        }
-    },
+    // userId: {
+    //     type: Sequelize.UUID,
+    //     allowNull: false,
+    //     references: {
+    //         model: 'User',
+    //         key: 'id'
+    //     }
+    // },
     imageUrl: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -55,6 +54,5 @@ const Resturant = dbConnection.define('Resturants', {
     }
 });
 
-// Resturant.hasMany(Meal);
 
 module.exports = Resturant;

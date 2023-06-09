@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
 
-const Charity = dbConnection.define('Charities', {
+const Charity = dbConnection.define('charity', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,

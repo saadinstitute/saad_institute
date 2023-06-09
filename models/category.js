@@ -1,8 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
-const Meal = require("./meal");
 
-const Category = dbConnection.define('Categories', {
+const Category = dbConnection.define('category', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,
@@ -28,8 +27,5 @@ const Category = dbConnection.define('Categories', {
     },
 });
 
-// Category.associations = function(models){
-//     Category.hasMany(models.Category, {foreignKey: 'id',sourceKey: 'categoryId'});
-// };
 
 module.exports = Category;

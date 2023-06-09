@@ -1,9 +1,9 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
-const Category = require("./category");
 const Resturant = require("./resturant");
+const Category = require("./category");
 
-const Meal = dbConnection.define('Meals', {
+const Meal = dbConnection.define('meal', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,
@@ -18,22 +18,22 @@ const Meal = dbConnection.define('Meals', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    categoryId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-            model: 'Categories',
-            key: 'id'
-        }
-    },
-    resturantId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-            model: 'Resturants',
-            key: 'id'
-        }
-    },
+    // categoryId: {
+    //     type: Sequelize.UUID,
+    //     allowNull: false,
+    //     references: {
+    //         model: 'Category',
+    //         key: 'id'
+    //     }
+    // },
+    // resturantId: {
+    //     type: Sequelize.UUID,
+    //     allowNull: false,
+    //     references: {
+    //         model: 'Resturant',
+    //         key: 'id'
+    //     }
+    // },
     imageUrl: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -63,8 +63,5 @@ const Meal = dbConnection.define('Meals', {
         allowNull: true
     }
 });
-
-
-// Meal.belongsTo(Category, {foreignKey: 'id'});
 
 module.exports = Meal;

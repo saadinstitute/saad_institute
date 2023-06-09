@@ -2,7 +2,7 @@ const { request, response } = require('express');
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
 const BaseResponse = require('../models/base_response');
-const User = require('../models/users');
+const User = require('../models/user');
 
 router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
