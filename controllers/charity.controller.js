@@ -22,10 +22,24 @@ const getCharities = async (req, res) => {
         const { pageSize = 10, page = 0} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
+        let like = '';
+        if(search) like = `%${search}%`;
+        let query = {[Op.or]:[
+            {
+                arName:{
+                    [Op.like]: like
+                }
+            },
+            {
+                enName:{
+                    [Op.like]: like
+                }
+            }
+        ]};
         let Charities;
         let CharitiesCount;
-        Charities = await Charity.findAll({offset: start * size, limit: size});
-        CharitiesCount = await Charity.count();
+        Charities = await Charity.findAll({ where: query, offset: start * size, limit: size});
+        CharitiesCount = await Charity.count({where: query});
         res.send(new BaseResponse({ data: Charities, success: true, msg: "success", lang, pagination: {total: CharitiesCount, page: start, pageSize: size} }));
     } catch (error) {
         console.log(error);
