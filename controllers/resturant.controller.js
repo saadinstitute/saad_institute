@@ -3,6 +3,7 @@ const Resturant = require('../models/resturant');
 const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser  } = require("../others/validator");
+const { Op } = require("sequelize");
 
 const addResturant = async (req, res) => {
     const lang = req.headers["lang"];
@@ -26,17 +27,31 @@ const getResturants = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const user = await validateUser(req);
-        const { pageSize = 10, page = 0} = req.query;
+        const { pageSize = 10, page = 0, search} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
+        let like = '';
+        if(search) like = `%${search}%`;
+        let query = {[Op.or]:[
+            {
+                arName:{
+                    [Op.like]: like
+                }
+            },
+            {
+                enName:{
+                    [Op.like]: like
+                }
+            }
+        ]};
         let resturants;
         let resturantsCount;
         if(user.role == "admin"){
-            resturants = await Resturant.findAll({where: {userId: user.id}, offset: start * size, limit: size});
-            resturantsCount = await Resturant.count({where: {userId: user.id}});
+            resturants = await Resturant.findAll({where: {userId: user.id, ...query}, offset: start * size, limit: size});
+            resturantsCount = await Resturant.count({where: {userId: user.id, ...query}});
         } else {
-            resturants = await Resturant.findAll({offset: start * size, limit: size});
-            resturantsCount = await Resturant.count();
+            resturants = await Resturant.findAll({where:{ ...query },offset: start * size, limit: size});
+            resturantsCount = await Resturant.count({where:{ ...query }});
         }
         res.send(new BaseResponse({ data: resturants, success: true, msg: "success", lang, pagination: {total: resturantsCount, page: start, pageSize: size} }));
     } catch (error) {

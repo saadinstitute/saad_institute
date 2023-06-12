@@ -8,7 +8,11 @@ router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
     if (['/auth', '/app', '/upload'].some((word) => url.startsWith(word)))
         return next();
-    var token = req.headers['authorization'];
+    // if(!req.headers['authorization'].startsWith("Bearer ")){
+    //     return res.status(401).send(new BaseResponse({success: false, msg: "the authorization must be Bearer", status: 400, lang}));
+    // }
+    let token = req.headers['authorization'];
+    // token = token.split(" ")[1];
     var lang = req.headers['lang'];
     if (token) {
         jwt.verify(token, process.env.TOKEN_KEY,

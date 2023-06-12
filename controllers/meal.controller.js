@@ -38,18 +38,32 @@ const addMeal = async (req, res) => {
 const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0 } = req.query;
+        const { pageSize = 10, page = 0, search} = req.query;
         const { resturantId } = req.body;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
+        let like = '';
+        if(search) like = `%${search}%`;
+        let query = {[Op.or]:[
+            {
+                arName:{
+                    [Op.like]: like
+                }
+            },
+            {
+                enName:{
+                    [Op.like]: like
+                }
+            }
+        ]};
         let meals;
         let mealsCount;
         if (resturantId) {
-            meals = await Meal.findAll({ where: { resturantId }, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
-            mealsCount = await Meal.count({ where: { resturantId }, offset: start * size, limit: size});
+            meals = await Meal.findAll({ where: { resturantId , ...query}, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
+            mealsCount = await Meal.count({ where: { resturantId , ...query}, offset: start * size, limit: size});
         } else {
-            meals = await Meal.findAll({ offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
-            mealsCount = await Meal.count();
+            meals = await Meal.findAll({where: query, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
+            mealsCount = await Meal.count({where: query});
         }
         res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
     } catch (error) {

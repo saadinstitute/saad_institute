@@ -22,11 +22,25 @@ const users = async (req, res) => {
         const msg = await validateSuperAdmin(req);
         if (msg) 
             return res.send(new BaseResponse({ success: false, status: 403, msg, lang }));
-        const { pageSize = 10, page = 0} = req.query;
+        const { pageSize = 10, page = 0, search} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        const users = await User.findAll({offset: start * size, limit: size,attributes: { exclude: ['password'] }});
-        const usersCount = await User.count();
+        let like = '';
+        if(search) like = `%${search}%`;
+        let query = {[Op.or]:[
+            {
+                username:{
+                    [Op.like]: like
+                }
+            },
+            {
+                email:{
+                    [Op.like]: like
+                }
+            }
+        ]};
+        const users = await User.findAll({where: query ,offset: start * size, limit: size,attributes: { exclude: ['password'] }});
+        const usersCount = await User.count({where: query});
         res.status(201).send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
     } catch (err) {
         console.log(err);

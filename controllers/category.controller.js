@@ -23,11 +23,25 @@ const addCategory = async (req, res) => {
 const getCategories = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize, page } = req.query;
+        const { pageSize, page, search } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        const categories = await Category.findAll({ offset: start * size, limit: size });
-        const categoriesCount = await Category.count();
+        let like = '';
+        if(search) like = `%${search}%`;
+        let query = {[Op.or]:[
+            {
+                arName:{
+                    [Op.like]: like
+                }
+            },
+            {
+                enName:{
+                    [Op.like]: like
+                }
+            }
+        ]};
+        const categories = await Category.findAll({where: query, offset: start * size, limit: size });
+        const categoriesCount = await Category.count({where: query});
         res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang, pagination: { total: categoriesCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
