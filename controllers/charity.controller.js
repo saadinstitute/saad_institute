@@ -22,7 +22,7 @@ const getCharities = async (req, res) => {
         const { pageSize = 10, page = 0} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        let like = '';
+        let like = '$$';
         if(search) like = `%${search}%`;
         let query = {[Op.or]:[
             {
