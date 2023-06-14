@@ -5,6 +5,7 @@ const Category = require('../models/category');
 const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
+const { Op } = require("sequelize");
 
 const addMeal = async (req, res) => {
     const lang = req.headers["lang"];

@@ -4,6 +4,7 @@ const Resturant = require('../models/resturant');
 const User = require('../models/user');
 const Meal = require('../models/meal');
 const Charity = require('../models/meal');
+const { Op } = require("sequelize");
 
 const getHome = async (req, res) => {
     const lang = req.headers["lang"];

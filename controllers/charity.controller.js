@@ -1,6 +1,7 @@
 const BaseResponse = require('../models/base_response');
 const Charity = require('../models/charity');
 const { validateAdmin, validateUser, validateSuperAdmin  } = require("../others/validator");
+const { Op } = require("sequelize");
 
 const addCharity = async (req, res) => {
     const lang = req.headers["lang"];

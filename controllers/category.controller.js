@@ -3,6 +3,7 @@ const Category = require('../models/category');
 const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateSuperAdmin } = require("../others/validator");
+const { Op } = require("sequelize");
 
 const addCategory = async (req, res) => {
     const lang = req.headers["lang"];

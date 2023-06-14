@@ -6,6 +6,7 @@ const config = require('../config.js');
 const store = require('store');
 const formidable = require('formidable');
 const { validateSuperAdmin, validateUser  } = require("../others/validator");
+const { Op } = require("sequelize");
 
 
 const transporter = nodemailer.createTransport({
