@@ -37,10 +37,9 @@ const getCharities = async (req, res) => {
                 }
             }
         ]};
-        let Charities;
-        let CharitiesCount;
-        Charities = await Charity.findAll({ where: query, offset: start * size, limit: size});
-        CharitiesCount = await Charity.count({where: query});
+        const data = await Charity.findAndCountAll({ where: query, offset: start * size, limit: size});
+        const Charities = data.rows;
+        const CharitiesCount = data.count;
         res.send(new BaseResponse({ data: Charities, success: true, msg: "success", lang, pagination: {total: CharitiesCount, page: start, pageSize: size} }));
     } catch (error) {
         console.log(error);

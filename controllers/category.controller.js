@@ -4,6 +4,7 @@ const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
+const sequelize = require("../database/db");
 
 const addCategory = async (req, res) => {
     const lang = req.headers["lang"];
@@ -41,9 +42,27 @@ const getCategories = async (req, res) => {
                 }
             }
         ]};
-        const categories = await Category.findAll({where: query, offset: start * size, limit: size });
-        const categoriesCount = await Category.count({where: query});
+        const data = await Category.findAndCountAll({where: query, offset: start * size, limit: size });
+        const categories = data.rows;
+        const categoriesCount = data.count;
         res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang, pagination: { total: categoriesCount, page: start, pageSize: size } }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const getResturantCategories = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        if (!req.params.resturantId)
+            return res.send(new BaseResponse({ success: false, status: 400, msg: "resturant id param is required", lang }));
+        let resId = req.params.resturantId;
+        const categories = await sequelize.query(`SELECT ca.* FROM categories as ca, meals as m where m.resturantId = '${resId}' and m.categoryId = ca.id`, {
+            model: Category,
+            mapToModel: true
+          });
+        res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang}));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -117,4 +136,4 @@ function getFileFromReq(req) {
 }
 
 
-module.exports = { addCategory, getCategories, updateCategory, deleteCategory };
+module.exports = { addCategory, getCategories, getResturantCategories, updateCategory, deleteCategory };

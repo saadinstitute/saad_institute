@@ -39,33 +39,32 @@ const addMeal = async (req, res) => {
 const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, search} = req.query;
-        const { resturantId } = req.body;
+        const { pageSize = 10, page = 0, search } = req.query;
+        const { resturantId, categoryId } = req.body;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        let query;
-        if(search);
-        query = {[Op.or]:[
-            {
-                arName:{
-                    [Op.like]: `%${search}%`
+        let query = {};
+        if (search) {
+            query[Op.or] = [
+                {
+                    arName: {
+                        [Op.like]: `%${search}%`
+                    }
+                },
+                {
+                    enName: {
+                        [Op.like]: `%${search}%`
+                    }
                 }
-            },
-            {
-                enName:{
-                    [Op.like]: `%${search}%`
-                }
-            }
-        ]};
-        let meals;
-        let mealsCount;
-        if (resturantId) {
-            meals = await Meal.findAll({ where: { resturantId , ...query}, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
-            mealsCount = await Meal.count({ where: { resturantId , ...query}, offset: start * size, limit: size});
-        } else {
-            meals = await Meal.findAll({where: query, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"]}});
-            mealsCount = await Meal.count({where: query});
+            ];
         }
+        if (resturantId)
+            query.resturantId = resturantId;
+        if (categoryId)
+            query.categoryId = categoryId;
+        const data = await Meal.findAndCountAll({ where: query, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"] } });
+        const meals = data.rows;
+        const mealsCount = data.count;
         res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
@@ -91,7 +90,7 @@ const updateMeal = async (req, res) => {
             return res.send(new BaseResponse({ success: false, msg: "you don't have permission to edit this meal", status: 403, lang }));
         }
         const meal = await Meal.findByPk(id);
-        if(!meal){
+        if (!meal) {
             return res.send(new BaseResponse({ success: false, msg: "meal not fount", status: 400, lang }));
         }
         if (data.image) {

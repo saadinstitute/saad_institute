@@ -40,9 +40,10 @@ const users = async (req, res) => {
                 }
             }
         ]};
-        const users = await User.findAll({where: query ,offset: start * size, limit: size,attributes: { exclude: ['password'] }});
-        const usersCount = await User.count({where: query});
-        res.status(201).send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
+        const data = await User.findAndCountAll({where: query ,offset: start * size, limit: size,attributes: { exclude: ['password'] }});
+        const users = data.rows;
+        const usersCount = data.count;
+        res.send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
     } catch (err) {
         console.log(err);
         res.status(400).send(new BaseResponse({ msg: err, success: false, status: 400, lang }));
