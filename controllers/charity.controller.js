@@ -20,7 +20,7 @@ const addCharity = async (req, res) => {
 const getCharities = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0} = req.query;
+        const { pageSize = 10, page = 0, search} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
