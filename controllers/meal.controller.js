@@ -39,8 +39,7 @@ const addMeal = async (req, res) => {
 const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, search } = req.query;
-        const { resturantId, categoryId } = req.body;
+        const { pageSize = 10, page = 0, search, resturantId, categoryId } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
