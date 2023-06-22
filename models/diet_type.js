@@ -17,6 +17,9 @@ const DietType = dbConnection.define('dietType', {
         type: DataTypes.TEXT,
         allowNull: false
     },
+},{
+    timestamps: true,
+    freezeTableName: true
 });
 
 DietType.beforeCreate(dietType => dietType.id = uuid());

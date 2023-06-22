@@ -62,6 +62,9 @@ const Meal = dbConnection.define('meal', {
         type: DataTypes.STRING,
         allowNull: true
     }
+},{
+    timestamps: true,
+    freezeTableName: true
 });
 
 module.exports = Meal;

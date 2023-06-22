@@ -31,6 +31,9 @@ const Charity = dbConnection.define('charity', {
         type: DataTypes.STRING,
         allowNull: true
     }
+},{
+    timestamps: true,
+    freezeTableName: true
 });
 
 module.exports = Charity;

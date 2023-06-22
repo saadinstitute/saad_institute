@@ -62,6 +62,9 @@ const User = dbConnection.define('user', {
         allowNull: false,
         defaultValue: false
     },
+},{
+    timestamps: true,
+    freezeTableName: true
 });
 
 

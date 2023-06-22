@@ -25,6 +25,9 @@ const Category = dbConnection.define('category', {
             isUrl: true
         }
     },
+},{
+    timestamps: true,
+    freezeTableName: true
 });
 
 

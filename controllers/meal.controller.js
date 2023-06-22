@@ -2,10 +2,12 @@ const BaseResponse = require('../models/base_response');
 const Meal = require('../models/meal');
 const Resturant = require('../models/resturant');
 const Category = require('../models/category');
+const MealUserFav = require('../models/meal_user_fav');
 const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
+const sequelize = require("../database/db");
 
 const addMeal = async (req, res) => {
     const lang = req.headers["lang"];
@@ -39,6 +41,7 @@ const addMeal = async (req, res) => {
 const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
+        const user = await validateUser(req);
         const { pageSize = 10, page = 0, search, resturantId, categoryId } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
@@ -61,7 +64,30 @@ const getMeals = async (req, res) => {
             query.resturantId = resturantId;
         if (categoryId)
             query.categoryId = categoryId;
-        const data = await Meal.findAndCountAll({ where: query, offset: start * size, limit: size, include: [Resturant, Category], attributes: { exclude: ["resturantId", "categoryId"] } });
+        const data = await Meal.findAndCountAll({
+            where: query,
+            offset: start * size,
+            limit: size,
+            include: [{
+                model: Resturant,
+                as: "resturant"
+            }, {
+                model: Category,
+                as: "category",
+            }
+            // , {
+            //     model: MealUserFav,
+            //     where: {
+            //         userId: user.id
+            //     },
+            //     through: {
+            //         attributes: ["isFav"]
+            //     }
+
+            // }
+            ],
+            attributes: { exclude: ["resturantId", "categoryId"] },
+        });
         const meals = data.rows;
         const mealsCount = data.count;
         res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
