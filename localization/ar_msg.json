@@ -29,6 +29,7 @@
     "there is no resturant with the id":"المطعم غير موجود",
     "there is no charity with the id":"الجمعية غير موجودة",
     "userId field is required":"\"userId\" مطلوب",
+    "mealId is required":"\"mealId\" مطلوب",
     "you can't delete your account":"لا يمكنك حذف حسابك بنفسك",
     "mobile must be unique":"رقم الهاتف مستخدم مسبقاً",
     "arName must be unique":"الاسم العربي مستخدم مسبقاً",

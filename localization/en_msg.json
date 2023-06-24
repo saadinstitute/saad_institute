@@ -29,6 +29,7 @@
     "there is no resturant with the id":"There is no resturant with the id",
     "there is no charity with the id":"There is no charity with the id",
     "userId field is required":"\"userId\" field is required",
+    "mealId is required":"\"mealId\" field is required",
     "you can't delete your account":"you can't delete your account",
     "mobile must be unique":"Mobile is used already",
     "arName must be unique":"Arabic name is used already",

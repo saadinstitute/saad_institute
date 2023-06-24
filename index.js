@@ -27,6 +27,8 @@ app.use(express.json());
 Category.hasMany(Meal);
 Resturant.hasMany(Meal);
 User.hasMany(Resturant);
+User.hasMany(MealUserFav);
+Meal.hasMany(MealUserFav);
 User.belongsToMany(Meal, { through: MealUserFav });
 Meal.belongsTo(Resturant);
 Resturant.belongsTo(User);
@@ -43,6 +45,6 @@ app.use(charityRouter);
 app.use(mealRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-    await dbConnection.sync({alter: false});    
+    await dbConnection.sync({alter: false, force: false});    
     console.log(`Example app listening on port ${port}`)
 })

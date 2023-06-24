@@ -7,7 +7,22 @@ const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
-const sequelize = require("../database/db");
+
+const editFavMeal = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const { mealId, isFav } = req.body;
+        const user = await validateUser(req);
+        if (!mealId) {
+            return res.send(new BaseResponse({ success: false, msg: `mealId is required`, status: 400, lang }));
+        }
+        await MealUserFav.upsert({ userId: user.id, mealId, isFav });
+        res.send(new BaseResponse({ success: true, msg: "success", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
 
 const addMeal = async (req, res) => {
     const lang = req.headers["lang"];
@@ -42,7 +57,7 @@ const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const user = await validateUser(req);
-        const { pageSize = 10, page = 0, search, resturantId, categoryId } = req.query;
+        const { pageSize = 10, page = 0, search, resturantId, categoryId, isFav = 'false', justOffers = 'false'} = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
@@ -64,6 +79,11 @@ const getMeals = async (req, res) => {
             query.resturantId = resturantId;
         if (categoryId)
             query.categoryId = categoryId;
+        if (justOffers === 'true') {
+            query.discount = {
+                [Op.gt]: 0
+            };
+        }
         const data = await Meal.findAndCountAll({
             where: query,
             offset: start * size,
@@ -74,23 +94,32 @@ const getMeals = async (req, res) => {
             }, {
                 model: Category,
                 as: "category",
+            }, {
+                model: MealUserFav,
+                where: {
+                    userId: user.id
+                },
+                required: isFav === 'true',
+                attributes: ["isFav"],
+                as: "meal_user_favs",
             }
-            // , {
-            //     model: MealUserFav,
-            //     where: {
-            //         userId: user.id
-            //     },
-            //     through: {
-            //         attributes: ["isFav"]
-            //     }
-
-            // }
             ],
             attributes: { exclude: ["resturantId", "categoryId"] },
         });
+
         const meals = data.rows;
         const mealsCount = data.count;
-        res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
+        let editedMeals = [];
+        for (let index = 0; index < meals.length; index++) {
+            editedMeals[index] = JSON.parse(JSON.stringify(meals[index].dataValues));
+            editedMeals[index].isFavourite = false;
+            if (editedMeals[index].meal_user_favs.length > 0) {
+                editedMeals[index].isFavourite = editedMeals[index].meal_user_favs[0].isFav;
+            }
+            editedMeals[index].meal_user_favs = undefined;
+        }
+
+        res.send(new BaseResponse({ data: editedMeals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -171,4 +200,4 @@ function getFormFromReq(req) {
 }
 
 
-module.exports = { addMeal, getMeals, updateMeal, deleteMeal };
+module.exports = { addMeal, getMeals, updateMeal, deleteMeal, editFavMeal };

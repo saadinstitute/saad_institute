@@ -58,7 +58,7 @@ const getResturantCategories = async (req, res) => {
         if (!req.params.resturantId)
             return res.send(new BaseResponse({ success: false, status: 400, msg: "resturant id param is required", lang }));
         let resId = req.params.resturantId;
-        const categories = await sequelize.query(`SELECT ca.* FROM categories as ca, meals as m where m.resturantId = '${resId}' and m.categoryId = ca.id`, {
+        const categories = await sequelize.query(`SELECT ca.* FROM category as ca, meal as m where m.resturantId = '${resId}' and m.categoryId = ca.id`, {
             model: Category,
             mapToModel: true
           });
