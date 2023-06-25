@@ -2,6 +2,7 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
+const cloudinary = require('../others/cloudinary.config');
 const config = require('../config.js');
 const store = require('store');
 const formidable = require('formidable');
@@ -232,6 +233,35 @@ const forgetPassword = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const client = await validateUser(req);
+        const data = await getFormFromReq(req);
+        if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
+        const user = await User.findOne({ where: { id: data.id }, attributes: {exclude:["password"]} });
+        if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
+        if(client.id !== user.id && client.role !== "superAdmin"){
+            return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
+        }
+        if (data.image) {
+            const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
+            user.imageUrl = resCloudinary.url ?? user.imageUrl;
+        }
+        const { fullName, dateOfBirth, mobile, gender, address } = data;
+        if(fullName && fullName !== "") user.fullName = fullName;
+        if(dateOfBirth && dateOfBirth !== "") user.dateOfBirth = dateOfBirth;
+        if(mobile && mobile !== "") user.mobile = mobile;
+        if(gender && gender !== "") user.gender = gender;
+        if(address && address !== "") user.address = address;
+        await user.save();
+        res.send(new BaseResponse({ data: user, success: true, msg: "updated successfully", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
 const deleteUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
@@ -323,4 +353,5 @@ module.exports = {
     users,
     deleteUser,
     addUser,
+    updateUser,
 };

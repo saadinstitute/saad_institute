@@ -41,5 +41,6 @@
     "meal not found":"الوجبة غير موجودة",
     "you don't have permission to add a meal to this restuarnt":"لايوجد لديك صلاحية بإضافة وجبة لهذا المطعم",
     "you don't have permission to edit this meal":"لايوجد لديك صلاحية التعديل على هذه الوجبة",
-    "you can't delete this meal":"لا يمكنك حذف هذه الوجبة"
+    "you can't delete this meal":"لا يمكنك حذف هذه الوجبة",
+    "you can't edit this account":"لا يمكنك التعديل على هذا الحساب"
 }
