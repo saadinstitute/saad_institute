@@ -4,10 +4,27 @@ const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
+const Donate = require('../models/donate');
+
+const donate = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const { resturantId, charityId, quantity } = req.body;
+        const user = await validateAdmin(req);
+        const resturant = await Resturant.findByPk(resturantId);
+        if(resturant.userId !== user.id) return res.send(new BaseResponse({status: 400, msg: "you can't donate for this resturant", lang }));
+        const donate = await Donate.create({ quantity, resturantId, charityId, donateBy: user.id });
+        res.send(new BaseResponse({ data: donate, success: true, msg: "success", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
 
 const addResturant = async (req, res) => {
     const lang = req.headers["lang"];
     try {
+
         const data = await getFormFromReq(req);
         const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile } = data;
         let { userId } = data;
@@ -118,4 +135,4 @@ function getFormFromReq(req) {
 }
 
 
-module.exports = { addResturant, getResturants, updateResturant, deleteResturant };
+module.exports = { addResturant, getResturants, updateResturant, deleteResturant, donate };

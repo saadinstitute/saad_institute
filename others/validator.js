@@ -38,6 +38,7 @@ async function validateAdmin(req){
         if(!user) throw {message:"there is no user with this token"};
         if(!user.isConfirmed) throw {message: "your account need to be confirmed"};
         if(user.role !== "superAdmin" || user.role !== "admin") return user;
+        throw {message: "permission denide"};
         
 }
 

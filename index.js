@@ -15,6 +15,8 @@ const Meal = require('./models/meal.js');
 const Category = require('./models/category.js');
 const Resturant = require('./models/resturant.js');
 const User = require('./models/user.js');
+const Donate = require('./models/donate.js');
+const Charity = require('./models/charity.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
@@ -24,14 +26,20 @@ app.use(express.json());
 
 
 
-Category.hasMany(Meal);
-Resturant.hasMany(Meal);
 User.hasMany(Resturant);
 User.hasMany(MealUserFav);
-Meal.hasMany(MealUserFav);
 User.belongsToMany(Meal, { through: MealUserFav });
-Meal.belongsTo(Resturant);
+
+Resturant.hasMany(Meal);
 Resturant.belongsTo(User);
+Resturant.hasMany(Donate);
+
+Category.hasMany(Meal);
+
+Charity.hasMany(Donate);
+
+Meal.hasMany(MealUserFav);
+Meal.belongsTo(Resturant);
 Meal.belongsTo(Category);
 Meal.belongsToMany(User, { through: MealUserFav });
 
@@ -45,6 +53,6 @@ app.use(charityRouter);
 app.use(mealRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-    await dbConnection.sync({alter: false, force: false});    
-    console.log(`Example app listening on port ${port}`)
+    await dbConnection.sync({alter: false, force: false});
+    console.log(`Example app listening on port ${port}`);
 })

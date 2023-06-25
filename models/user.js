@@ -15,7 +15,7 @@ const User = dbConnection.define('user', {
     username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: 'username'
     },
     password: {
         type: DataTypes.STRING,
@@ -27,7 +27,7 @@ const User = dbConnection.define('user', {
         validate: {
             isEmail: true
         },
-        unique: true
+        unique: 'email'
     },
     imageUrl: {
         type: DataTypes.STRING,
@@ -43,19 +43,25 @@ const User = dbConnection.define('user', {
     mobile: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: 'mobile'
     },
     address: {
         type: DataTypes.STRING,
         allowNull: true
     },
     gender: {
-        type: DataTypes.ENUM("male","female"),
-        allowNull: false
+        type: DataTypes.ENUM("male", "female"),
+        allowNull: false,
+        validate:{
+            isIn: ["male","female"]
+        }
     },
     role: {
-        type: DataTypes.ENUM("user","admin","superAdmin"),
-        allowNull: false
+        type: DataTypes.ENUM("user", "admin", "superAdmin"),
+        allowNull: false,
+        validate:{
+            isIn: ["user","admin","superAdmin"]
+        }
     },
     isConfirmed: {
         type: DataTypes.BOOLEAN,
@@ -65,6 +71,7 @@ const User = dbConnection.define('user', {
 },{
     timestamps: true,
     freezeTableName: true
+    
 });
 
 

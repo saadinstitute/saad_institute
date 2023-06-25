@@ -42,5 +42,6 @@
     "you don't have permission to add a meal to this restuarnt":"You don't have permission to add a meal to this restuarnt",
     "you don't have permission to edit this meal":"You don't have permission to edit this meal",
     "you can't delete this meal":"You can't delete this meal",
-    "you can't edit this account":"you can't edit this account"
+    "you can't edit this account":"You can't edit this account",
+    "you can't donate for this resturant":"You can't donate for this resturant"
 }
