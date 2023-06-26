@@ -52,9 +52,9 @@ const User = dbConnection.define('user', {
     gender: {
         type: DataTypes.ENUM("male", "female"),
         allowNull: false,
-        validate:{
-            isIn: ["male","female"]
-        }
+        // validate:{
+        //     isIn: ["male","female"]
+        // }
     },
     role: {
         type: DataTypes.ENUM("user", "admin", "superAdmin"),
