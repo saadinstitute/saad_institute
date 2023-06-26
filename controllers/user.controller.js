@@ -72,6 +72,8 @@ const register = async (req, res) => {
         else if (body.type === "owner") body.role = "admin";
         else if (body.type === "superAdmin") body.role = "superAdmin";
         else return res.send(new BaseResponse({ success: false, msg: `type is required (user || owner)`, lang }));
+        body.type = undefined;
+        console.log(body);
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (err) {

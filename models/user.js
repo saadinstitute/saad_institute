@@ -58,10 +58,7 @@ const User = dbConnection.define('user', {
     },
     role: {
         type: DataTypes.ENUM("user", "admin", "superAdmin"),
-        allowNull: false,
-        validate:{
-            isIn: ["user","admin","superAdmin"]
-        }
+        allowNull: false
     },
     isConfirmed: {
         type: DataTypes.BOOLEAN,
