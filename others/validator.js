@@ -15,9 +15,10 @@ async function validateSuperAdmin(req){
             return decoded;
         });
         const user = await User.findOne({where: {id: data.user_id}});
-        if(!user) return "there is no user with this token";
-        if(user.role !== "superAdmin") return "permission denied";
-        if(!user.isConfirmed) return "your account need to be confirmed";
+        if(!user) throw "there is no user with this token";
+        if(user.role !== "superAdmin") throw "permission denied";
+        if(!user.isConfirmed) throw "your account need to be confirmed";
+        // return user;
         
 }
 

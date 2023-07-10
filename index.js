@@ -17,6 +17,10 @@ const Resturant = require('./models/resturant.js');
 const User = require('./models/user.js');
 const Donate = require('./models/donate.js');
 const Charity = require('./models/charity.js');
+const Course = require('./models/course.js');
+const MealsInCourses = require('./models/meals_in_courses.js');
+const CourseMeal = require('./models/course_meal.js');
+const CourseUser = require('./models/course_user.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
@@ -24,11 +28,10 @@ const app = express();
 app.use(cors({origin: "*"}));
 app.use(express.json());
 
-
-
 User.hasMany(Resturant);
 User.hasMany(MealUserFav);
 User.belongsToMany(Meal, { through: MealUserFav });
+User.belongsToMany(Course, { through: CourseUser });
 
 Resturant.hasMany(Meal);
 Resturant.belongsTo(User);
@@ -42,6 +45,11 @@ Meal.hasMany(MealUserFav);
 Meal.belongsTo(Resturant);
 Meal.belongsTo(Category);
 Meal.belongsToMany(User, { through: MealUserFav });
+
+Course.belongsToMany(CourseMeal, {through: MealsInCourses});
+Course.belongsToMany(User, {through: CourseUser});
+
+CourseMeal.belongsToMany(Course, {through: MealsInCourses});
 
 app.use(middleware);
 app.use(userRouter);

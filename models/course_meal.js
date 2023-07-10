@@ -1,26 +1,32 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const uuid = require('uuid');
 const dbConnection = require("../database/db");
 
-const DietType = dbConnection.define('dietType', {
+const CourseMeal = dbConnection.define('course_meal', {
     id: {
         primaryKey: true,
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
     },
-    type: {
+    arName: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    description: {
-        type: DataTypes.TEXT,
+    enName: {
+        type: DataTypes.STRING,
         allowNull: false
     },
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isUrl: true
+        }
+    }
 },{
     timestamps: true,
     freezeTableName: true
 });
 
-DietType.beforeCreate(dietType => dietType.id = uuid());
-module.exports = DietType;
+
+module.exports = CourseMeal;
