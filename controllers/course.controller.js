@@ -26,7 +26,7 @@ const addCourse = async (req, res) => {
 const addCourseInMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { courseId, mealId, calories } = req.data;
+        const { courseId, mealId, calories } = req.body;
         await validateSuperAdmin(req);
         const row = await MealsInCourses.create({ courseId, mealId, calories });
         res.send(new BaseResponse({ data: row, success: true, msg: "success", lang }));
@@ -39,7 +39,7 @@ const addCourseInMeal = async (req, res) => {
 const deleteCourseFromMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { courseId, mealId } = req.data;
+        const { courseId, mealId } = req.body;
         await validateSuperAdmin(req);
         const row = await MealsInCourses.findOne({ where: { courseId, mealId } });
         const isSuccess = !(!(await row.destroy()));
