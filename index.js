@@ -48,10 +48,10 @@ Meal.belongsTo(Resturant);
 Meal.belongsTo(Category);
 Meal.belongsToMany(User, { through: MealUserFav });
 
-Course.belongsToMany(CourseMeal, {through: MealsInCourses});
+Course.belongsToMany(CourseMeal, {through: MealsInCourses, foreignKey:"courseId"});
 Course.belongsToMany(User, {through: CourseUser});
 
-CourseMeal.belongsToMany(Course, {through: MealsInCourses});
+CourseMeal.belongsToMany(Course, {through: MealsInCourses, foreignKey:"mealId"});
 
 app.use(middleware);
 app.use(userRouter);

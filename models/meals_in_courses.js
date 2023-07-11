@@ -7,6 +7,8 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
     mealId: {
         type: DataTypes.UUID,
         allowNull: false,
+        primaryKey: true,
+        field: "mealId",
         references: {
             model: CourseMeal,
             key: "id"
@@ -15,6 +17,8 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
     courseId: {
         type: DataTypes.UUID,
         allowNull: false,
+        primaryKey: true,
+        field: "courseId",
         references: {
             model: Course,
             key: "id"
