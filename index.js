@@ -11,6 +11,7 @@ const courseRouter = require('./routes/course.route.js');
 const dashboardRouter = require('./routes/dashboard.route.js');
 const charityRouter = require('./routes/charity.route.js');
 const mealRouter = require('./routes/meal.route.js');
+const mealCourseRouter = require('./routes/meal_course.route.js');
 const MealUserFav = require('./models/meal_user_fav.js');
 const Meal = require('./models/meal.js');
 const Category = require('./models/category.js');
@@ -61,6 +62,7 @@ app.use(dashboardRouter);
 app.use(charityRouter);
 app.use(mealRouter);
 app.use(courseRouter);
+app.use(mealCourseRouter);
 
 app.listen(port, "0.0.0.0", async () => {
     await dbConnection.sync({alter: false, force: false});

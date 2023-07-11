@@ -4,6 +4,7 @@ const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
+const MealsInCourses = require('../models/meals_in_courses');
 
 const addCourse = async (req, res) => {
     const lang = req.headers["lang"];
@@ -15,6 +16,37 @@ const addCourse = async (req, res) => {
         const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
         const course = await Course.create({ imageUrl: resCloudinary.url, arName, enName, enDescription, arDescription, price });
         res.send(new BaseResponse({ data: course, success: true, msg: "success", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const addCourseInMeal = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+
+        const data = await getFormFromReq(req);
+        const { courseId, mealId, calories } = data;
+        await validateSuperAdmin(req);
+        const row = await MealsInCourses.create({ courseId, mealId, calories });
+        res.send(new BaseResponse({ data: row, success: true, msg: "success", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const deleteCourseFromMeal = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+
+        const data = await getFormFromReq(req);
+        const { courseId, mealId} = data;
+        await validateSuperAdmin(req);
+        const row = await MealsInCourses.findOne({ where: { courseId, mealId } });
+        const isSuccess = !(!(await row.destroy()));
+        res.send(new BaseResponse({ success: isSuccess, msg: "success", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -47,6 +79,23 @@ const getCourses = async (req, res) => {
         let courses = data.rows;
         let coursesCount = data.count;
         res.send(new BaseResponse({ data: courses, success: true, msg: "success", lang, pagination: { total: coursesCount, page: start, pageSize: size } }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const getMeals = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        if (!req.params.resturantId)
+            return res.send(new BaseResponse({ success: false, status: 400, msg: "resturant id param is required", lang }));
+        let resId = req.params.resturantId;
+        const categories = await sequelize.query(`SELECT ca.* FROM category as ca, meal as m where m.resturantId = '${resId}' and m.categoryId = ca.id`, {
+            model: Category,
+            mapToModel: true
+          });
+        res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang}));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -109,4 +158,4 @@ function getFormFromReq(req) {
 }
 
 
-module.exports = { addCourse, getCourses, updateCourse, deleteCourse };
+module.exports = { addCourse, getCourses, updateCourse, deleteCourse, addCourseInMeal, deleteCourseFromMeal, getMeals };
