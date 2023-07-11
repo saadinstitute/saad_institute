@@ -7,6 +7,6 @@ router.put('/course', courseController.updateCourse);
 router.delete('/course/:id', courseController.deleteCourse);
 router.post('/course/meal', courseController.addCourseInMeal);
 router.delete('/course/meal', courseController.deleteCourseFromMeal);
-router.get('/course/meals', courseController.getMeals);
+router.get('/course/meals/:courseId', courseController.getMeals);
 
 module.exports = router;
