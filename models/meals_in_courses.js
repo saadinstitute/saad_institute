@@ -21,7 +21,7 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
         }
     },
     calories: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DOUBLE,
         allowNull: true
     }
 },{

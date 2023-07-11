@@ -5,6 +5,7 @@ const formidable = require('formidable');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
 const MealsInCourses = require('../models/meals_in_courses');
+const CourseMeal = require('../models/course_meal');
 
 const addCourse = async (req, res) => {
     const lang = req.headers["lang"];
@@ -25,9 +26,7 @@ const addCourse = async (req, res) => {
 const addCourseInMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-
-        const data = await getFormFromReq(req);
-        const { courseId, mealId, calories } = data;
+        const { courseId, mealId, calories } = req.data;
         await validateSuperAdmin(req);
         const row = await MealsInCourses.create({ courseId, mealId, calories });
         res.send(new BaseResponse({ data: row, success: true, msg: "success", lang }));
@@ -40,9 +39,7 @@ const addCourseInMeal = async (req, res) => {
 const deleteCourseFromMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-
-        const data = await getFormFromReq(req);
-        const { courseId, mealId} = data;
+        const { courseId, mealId } = req.data;
         await validateSuperAdmin(req);
         const row = await MealsInCourses.findOne({ where: { courseId, mealId } });
         const isSuccess = !(!(await row.destroy()));
@@ -88,14 +85,15 @@ const getCourses = async (req, res) => {
 const getMeals = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        if (!req.params.resturantId)
-            return res.send(new BaseResponse({ success: false, status: 400, msg: "resturant id param is required", lang }));
-        let resId = req.params.resturantId;
-        const categories = await sequelize.query(`SELECT ca.* FROM category as ca, meal as m where m.resturantId = '${resId}' and m.categoryId = ca.id`, {
-            model: Category,
-            mapToModel: true
+        if (!req.params.courseId)
+            return res.send(new BaseResponse({ success: false, status: 400, msg: "course id param is required", lang }));
+        let courseId = req.params.courseId;
+        const meals = await sequelize.query(`SELECT cm.*, cim.calories as calories FROM course_meal as cm, course_in_meal as cim
+         where cim.courseId = '${courseId}' and cim.mealId = cm.id`, {
+            model: CourseMeal,
+            // mapToModel: true
           });
-        res.send(new BaseResponse({ data: categories, success: true, msg: "success", lang}));
+        res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang}));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
