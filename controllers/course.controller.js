@@ -6,6 +6,7 @@ const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/v
 const { Op } = require("sequelize");
 const MealsInCourses = require('../models/meals_in_courses');
 const CourseMeal = require('../models/course_meal');
+const sequelize = require("../database/db");
 
 const addCourse = async (req, res) => {
     const lang = req.headers["lang"];
