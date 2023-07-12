@@ -89,7 +89,7 @@ const getMeals = async (req, res) => {
         if (!req.params.courseId)
             return res.send(new BaseResponse({ success: false, status: 400, msg: "course id param is required", lang }));
         let courseId = req.params.courseId;
-        const meals = await sequelize.query(`SELECT cm.*, cim.calories as calories FROM course_meal as cm, course_in_meal as cim
+        const meals = await sequelize.query(`SELECT cm.*, cim.calories as calories FROM course_meal as cm, meals_in_courses as cim
          where cim.courseId = '${courseId}' and cim.mealId = cm.id`, {
             model: CourseMeal,
             // mapToModel: true
