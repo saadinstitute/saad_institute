@@ -117,8 +117,8 @@ const getMeals = async (req, res) => {
                 editedMeals[index].isFavourite = editedMeals[index].meal_user_favs[0].isFav;
             }
             editedMeals[index].meal_user_favs = undefined;
-        }
 
+        }
         res.send(new BaseResponse({ data: editedMeals, success: true, msg: "success", lang, pagination: { total: mealsCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);

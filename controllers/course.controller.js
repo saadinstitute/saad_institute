@@ -54,7 +54,7 @@ const deleteCourseFromMeal = async (req, res) => {
 const getCourses = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        await validateSuperAdmin(req);
+        // await validateSuperAdmin(req);
         const { pageSize = 10, page = 0, search } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
