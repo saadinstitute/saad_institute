@@ -75,14 +75,18 @@ const getMeals = async (req, res) => {
                 }
             ];
         }
-        if (resturantId)
-            query.resturantId = resturantId;
-        if (categoryId)
-            query.categoryId = categoryId;
+        if (resturantId) query.resturantId = resturantId;
+        if (categoryId) query.categoryId = categoryId;
         if (justOffers === 'true') {
             query.discount = {
                 [Op.gt]: 0
             };
+        }
+        let userFavWhere = {
+            userId: user.id
+        };
+        if(isFav === 'true'){
+            userFavWhere.isFav= true;
         }
         const data = await Meal.findAndCountAll({
             where: query,
@@ -94,11 +98,10 @@ const getMeals = async (req, res) => {
             }, {
                 model: Category,
                 as: "category",
-            }, {
+            }
+            , {
                 model: MealUserFav,
-                where: {
-                    userId: user.id
-                },
+                where: userFavWhere,
                 required: isFav === 'true',
                 attributes: ["isFav"],
                 as: "meal_user_favs",
@@ -113,6 +116,7 @@ const getMeals = async (req, res) => {
         for (let index = 0; index < meals.length; index++) {
             editedMeals[index] = JSON.parse(JSON.stringify(meals[index].dataValues));
             editedMeals[index].isFavourite = false;
+            // const row = MealUserFav.findOne({ where: {} });
             if (editedMeals[index].meal_user_favs.length > 0) {
                 editedMeals[index].isFavourite = editedMeals[index].meal_user_favs[0].isFav;
             }
