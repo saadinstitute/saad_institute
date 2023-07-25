@@ -7,13 +7,61 @@ const { Op } = require("sequelize");
 const MealsInCourses = require('../models/meals_in_courses');
 const CourseMeal = require('../models/course_meal');
 const sequelize = require("../database/db");
+const CourseUser = require('../models/course_user');
+
+const subscribeCourse = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+
+        const data = req.body;
+        const { courseId, beginAt, endAt, receiveAt } = data;
+        const user = await validateUser(req);
+        if (user.role != "user")
+            return res.send(new BaseResponse({ status: 403, msg: "you cann't subscribe to this course", lang }));
+        const oldSub = await CourseUser.findOne({
+            where: {
+                courseId: courseId,
+                userId: user.id
+            }
+        });
+        if (oldSub)
+            return res.send(new BaseResponse({ status: 400, msg: "you cann't subscribe to the same course twice", lang }));
+        const subscribtion = await CourseUser.create({ courseId, beginAt: Date.parse(beginAt), endAt: Date.parse(endAt), receiveAt: Date.parse(receiveAt), userId: user.id });
+        res.send(new BaseResponse({ data: subscribtion, success: true, msg: "success", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const unsubscribeCourse = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const data = req.body;
+        const { courseId } = data;
+        const user = await validateUser(req);
+        const subscribtion = await CourseUser.findOne({
+            where: {
+                courseId: courseId,
+                userId: user.id
+            }
+        });
+        if(!subscribtion)
+            return res.send(new BaseResponse({ status: 400, msg: "you are not subscribed to this course", lang })); 
+        const isSuccess = !(!(await subscribtion.destroy()));
+        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess ? "unsubscribed successfully" : "there is someting wrong, please try again later", lang }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
 
 const addCourse = async (req, res) => {
     const lang = req.headers["lang"];
     try {
 
         const data = await getFormFromReq(req);
-        const { arName, enName, enDescription, arDescription, price} = data;
+        const { arName, enName, enDescription, arDescription, price } = data;
         await validateSuperAdmin(req);
         const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
         const course = await Course.create({ imageUrl: resCloudinary.url, arName, enName, enDescription, arDescription, price });
@@ -54,8 +102,8 @@ const deleteCourseFromMeal = async (req, res) => {
 const getCourses = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        // await validateSuperAdmin(req);
-        const { pageSize = 10, page = 0, search } = req.query;
+        const user = await validateUser(req);
+        const { pageSize = 10, page = 0, search, isSubscribed } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
@@ -73,10 +121,27 @@ const getCourses = async (req, res) => {
                 }
             ];
         }
-        const data = await Course.findAndCountAll({ where: query, offset: start * size, limit: size });
+        const data = await Course.findAndCountAll({ where: query, offset: start * size, limit: size,
+            include: {
+                model: CourseUser,
+                where: {
+                    userId: user.id
+                },
+                required: isSubscribed === 'true',
+                as: "course_users",
+            } });
         let courses = data.rows;
         let coursesCount = data.count;
-        res.send(new BaseResponse({ data: courses, success: true, msg: "success", lang, pagination: { total: coursesCount, page: start, pageSize: size } }));
+        let edited = [];
+        for (let index = 0; index < courses.length; index++) {
+            edited[index] = JSON.parse(JSON.stringify(courses[index].dataValues));
+            edited[index].subscription = null;
+            if(edited[index].course_users.length > 0){
+                edited[index].subscription = edited[index].course_users[0];
+            }
+            edited[index].course_users = undefined;
+        }
+        res.send(new BaseResponse({ data: edited, success: true, msg: "success", lang, pagination: { total: coursesCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -93,8 +158,8 @@ const getMeals = async (req, res) => {
          where cim.courseId = '${courseId}' and cim.mealId = cm.id`, {
             model: CourseMeal,
             // mapToModel: true
-          });
-        res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang}));
+        });
+        res.send(new BaseResponse({ data: meals, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
@@ -157,4 +222,4 @@ function getFormFromReq(req) {
 }
 
 
-module.exports = { addCourse, getCourses, updateCourse, deleteCourse, addCourseInMeal, deleteCourseFromMeal, getMeals };
+module.exports = { addCourse, getCourses, updateCourse, deleteCourse, addCourseInMeal, deleteCourseFromMeal, getMeals, subscribeCourse, unsubscribeCourse };

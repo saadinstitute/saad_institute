@@ -44,5 +44,9 @@
     "you can't delete this meal":"لا يمكنك حذف هذه الوجبة",
     "you can't edit this account":"لا يمكنك التعديل على هذا الحساب",
     "you can't donate for this resturant":"لا يمكنك التبرع لهذا المطعم",
-    "there is no course with the id":"الكورس غير موجود"
+    "there is no course with the id":"الكورس غير موجود",
+    "you cann't subscribe to this course":"لايمكنك الاشتراك بهذا الكورس",
+    "you cann't subscribe to the same course twice":"لايمكنك الاشتراك بالكورس نفسه مرتين",
+    "you are not subscribed to this course":"انت غير مشترك بهذا الكورس",
+    "unsubscribed successfully":"تم الغاء الاشتراك بنجاح"
 }

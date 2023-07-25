@@ -4,6 +4,12 @@ const Course = require("./course");
 const User = require("./user");
 
 const CourseUser = dbConnection.define('course_user', {
+    id: {
+        primaryKey: true,
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: Sequelize.UUIDV4,
+    },
     userId: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -25,6 +31,10 @@ const CourseUser = dbConnection.define('course_user', {
         allowNull: false
     },
     endAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    receiveAt: {
         type: DataTypes.DATE,
         allowNull: false
     },

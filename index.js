@@ -50,6 +50,7 @@ Meal.belongsToMany(User, { through: MealUserFav });
 
 Course.belongsToMany(CourseMeal, {through: MealsInCourses, foreignKey:"courseId"});
 Course.belongsToMany(User, {through: CourseUser});
+Course.hasMany(CourseUser);
 
 CourseMeal.belongsToMany(Course, {through: MealsInCourses, foreignKey:"mealId"});
 

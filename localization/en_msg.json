@@ -44,5 +44,9 @@
     "you can't delete this meal":"You can't delete this meal",
     "you can't edit this account":"You can't edit this account",
     "you can't donate for this resturant":"You can't donate for this resturant",
-    "there is no course with the id":"There is no course with the id"
+    "there is no course with the id":"There is no course with the id",
+    "you cann't subscribe to this course":"You cann't subscribe to this course",
+    "you cann't subscribe to the same course twice":"You cann't subscribe to the same course twice",
+    "you are not subscribed to this course":"You are not subscribed to this course",
+    "unsubscribed successfully":"unsubscribed successfully"
 }
