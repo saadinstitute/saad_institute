@@ -7,7 +7,7 @@ const { Op } = require("sequelize");
 const addDelivery = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { arName,  mobile } = req.body;
+        const { arName, enName,  mobile } = req.body;
         const msg = await validateSuperAdmin(req);
         if(msg) return res.send(new BaseResponse({ success: false, msg: msg, lang, status: 403 }));
         const delivery = await Delivery.create({arName, enName, mobile});
