@@ -48,5 +48,6 @@
     "you cann't subscribe to this course":"لايمكنك الاشتراك بهذا الكورس",
     "you cann't subscribe to the same course twice":"لايمكنك الاشتراك بالكورس نفسه مرتين",
     "you are not subscribed to this course":"انت غير مشترك بهذا الكورس",
-    "unsubscribed successfully":"تم الغاء الاشتراك بنجاح"
+    "unsubscribed successfully":"تم الغاء الاشتراك بنجاح",
+    "there is no delivery company with the id":"شركة التوصيل غير موجودة"
 }
