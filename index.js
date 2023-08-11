@@ -14,6 +14,7 @@ const mealRouter = require('./routes/meal.route.js');
 const mealCourseRouter = require('./routes/meal_course.route.js');
 const deliveryRouter = require('./routes/delivery.route.js');
 const reservationRouter = require('./routes/reservation.route.js');
+const orderRouter = require('./routes/order.route.js');
 const MealUserFav = require('./models/meal_user_fav.js');
 const Meal = require('./models/meal.js');
 const Category = require('./models/category.js');
@@ -28,6 +29,7 @@ const CourseUser = require('./models/course_user.js');
 const Order = require('./models/order.js');
 const OrderMeal = require('./models/order_meal.js');
 const Reservation = require('./models/reservation.js');
+const Delivery = require('./models/delivery.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
@@ -43,9 +45,9 @@ User.belongsToMany(Meal, { through: MealUserFav });
 User.belongsToMany(Course, { through: CourseUser });
 
 Resturant.hasMany(Meal);
-Resturant.hasMany(Order);
 Resturant.hasMany(Reservation);
 Resturant.belongsTo(User);
+Resturant.belongsTo(Delivery);
 Resturant.hasMany(Donate);
 
 Category.hasMany(Meal);
@@ -69,6 +71,10 @@ Reservation.belongsTo(Order);
 Reservation.belongsTo(User);
 Reservation.belongsTo(Resturant);
 
+Delivery.hasOne(Resturant);
+
+Order.belongsTo(User);
+
 app.use(middleware);
 app.use(userRouter);
 app.use(appRouter);
@@ -81,8 +87,9 @@ app.use(courseRouter);
 app.use(mealCourseRouter);
 app.use(deliveryRouter);
 app.use(reservationRouter);
+app.use(orderRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-    await dbConnection.sync({alter: false, force: false});
+    await dbConnection.sync({alter: true, force: false});
     console.log(`Example app listening on port ${port}`);
 })

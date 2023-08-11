@@ -50,44 +50,20 @@ const getAllReservations = async (req, res) => {
 };
 
 
-const approve = async (req, res) => {
+const updateStatus = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const data = req.body;
-        const msg = await validateSuperAdmin(req);
-        if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
-        if (!data.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
-        const charity = await Charity.findOne({ where: { id: data.id } });
-        const { arName, enName, enAddress, arAddress, mobile } = data;
-        if (arName && arName !== "") charity.arName = arName;
-        if (enName && enName !== "") charity.enName = enName;
-        if (enAddress && enAddress !== "") charity.enAddress = enAddress;
-        if (arAddress && arAddress !== "") charity.arAddress = arAddress;
-        if (mobile && mobile !== "") charity.mobile = mobile;
-        await charity.save();
-        res.send(new BaseResponse({ data: charity, success: true, msg: "updated successfully", lang }));
+        const { status } = req.body;
+        const id = req.params.id;
+        const reservation = await Reservation.findByPk(id);
+        if (status && status !== "") reservation.status = status;
+        await reservation.save();
+        res.send(new BaseResponse({ data: reservation, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
 
-// const deleteCharity = async (req, res) => {
-//     const lang = req.headers["lang"];
-//     try {
-//         const msg = await validateSuperAdmin(req);
-//         if(msg) return res.send(new BaseResponse({ success: false, status: 403, msg, lang }));
-//         if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
-//         const id = req.params.id;
-//         const charity = await Charity.findOne({ where:{ id }});
-//         if(!charity) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no charity with the id", lang }));
-//         const isSuccess = !(!(await charity.destroy()));
-//         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
-//     }
-// };
 
-
-module.exports = { reserve, getAllReservations, approve };
+module.exports = { reserve, getAllReservations, updateStatus };

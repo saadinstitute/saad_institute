@@ -26,13 +26,13 @@ const addResturant = async (req, res) => {
     try {
 
         const data = await getFormFromReq(req);
-        const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile } = data;
+        const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile, deliveryId } = data;
         let { userId } = data;
         const user = await validateAdmin(req);
         if (user.role !== "superAdmin" && !userId) return res.send(new BaseResponse({ success: false, msg: "userId field is required", lang }));
         const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
         if (user.role == "admin") userId = user.id;
-        const resturant = await Resturant.create({ imageUrl: resCloudinary.url, arName, enName, arAddress, enAddress, openAt, closeAt, mobile, userId });
+        const resturant = await Resturant.create({ imageUrl: resCloudinary.url, arName, enName, arAddress, enAddress, openAt, closeAt, mobile, userId, deliveryId });
         res.send(new BaseResponse({ data: resturant, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -87,7 +87,7 @@ const updateResturant = async (req, res) => {
             resturant.imageUrl = resCloudinary.url ?? resturant.imageUrl;
         }
         if (user.role !== "superAdmin" && resturant.userId !== user.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this resturant", lang }));
-        const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile } = data;
+        const { arName, enName, enAddress, arAddress, openAt, closeAt, mobile, deliveryId } = data;
         if (arName && arName !== "") resturant.arName = arName;
         if (enName && enName !== "") resturant.enName = enName;
         if (enAddress && enAddress !== "") resturant.enAddress = enAddress;
@@ -95,6 +95,7 @@ const updateResturant = async (req, res) => {
         if (openAt && openAt !== "") resturant.openAt = openAt;
         if (closeAt && closeAt !== "") resturant.closeAt = closeAt;
         if (mobile && mobile !== "") resturant.mobile = mobile;
+        if (deliveryId && deliveryId !== "") resturant.deliveryId = deliveryId;
         await resturant.save();
         res.send(new BaseResponse({ data: resturant, success: true, msg: "updated successfully", lang }));
     } catch (error) {

@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
+const Delivery = require("./delivery");
 
 const Resturant = dbConnection.define('resturant', {
     id: {
@@ -51,6 +52,14 @@ const Resturant = dbConnection.define('resturant', {
     enAddress: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    deliveryId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: Delivery,
+            key: "id"
+        }
     }
 },{
     timestamps: true,
