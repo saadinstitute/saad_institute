@@ -136,10 +136,8 @@ const updateMeal = async (req, res) => {
         const data = await getFormFromReq(req);
         const { arName, enName, enDescription, arDescription, categoryId, resturantId, price, discount, id } = data;
         const user = await validateAdmin(req);
-        if (resturantId) {
-            const resturant = await Resturant.findByPk(resturantId);
-            if (!resturant) return res.send(new BaseResponse({ success: false, msg: "resturant not fount", status: 400, lang }));
-        }
+        const resturant = await Resturant.findByPk(resturantId);
+        if (!resturant) return res.send(new BaseResponse({ success: false, msg: "resturant not fount", status: 400, lang }));
         if (categoryId) {
             const category = await Category.findOne({ where: { id: categoryId } });
             if (!category) return res.send(new BaseResponse({ success: false, msg: "category not fount", status: 400, lang }));
