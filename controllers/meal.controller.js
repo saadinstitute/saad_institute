@@ -137,7 +137,7 @@ const updateMeal = async (req, res) => {
         const { arName, enName, enDescription, arDescription, categoryId, resturantId, price, discount, id } = data;
         const user = await validateAdmin(req);
         if (resturantId) {
-            const resturant = await Resturant.findOne({ where: { id: resturantId } });
+            const resturant = await Resturant.findByPk(resturantId);
             if (!resturant) return res.send(new BaseResponse({ success: false, msg: "resturant not fount", status: 400, lang }));
         }
         if (categoryId) {
