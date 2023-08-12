@@ -60,7 +60,12 @@ const Resturant = dbConnection.define('resturant', {
             model: Delivery,
             key: "id"
         }
-    }
+    },
+      popularity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+         defaultValue: 0
+    },
 },{
     timestamps: true,
     freezeTableName: true

@@ -1,7 +1,9 @@
 const BaseResponse = require('../models/base_response');
 const Order = require('../models/order');
 const Resturant = require('../models/resturant');
+const Meal = require('../models/meal');
 const User = require('../models/user');
+const add_popularity = require('../others/add_popularity');
 const OrderMeal = require('../models/order_meal');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
@@ -64,6 +66,11 @@ const updateStatus = async (req, res) => {
         const order = await Order.findByPk(id);
         if (status && status !== "") order.status = status;
         await order.save();
+      if(status=="preparing"){
+        const theMeal = await Meal.findByPk(order.mealId)
+        console.log(theMeal.resturantId)
+        add_popularity(theMeal.resturantId , 1  ,"0") 
+      }
         res.send(new BaseResponse({ data: order, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);

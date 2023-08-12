@@ -4,7 +4,7 @@ const CourseMeal = require("./course_meal");
 const Course = require("./course");
 
 const MealsInCourses = dbConnection.define('meals_in_courses', {
-    id: {
+  id: {
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
@@ -21,6 +21,7 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
     courseId: {
         type: DataTypes.UUID,
         allowNull: false,
+        primaryKey: true,
         field: "courseId",
         references: {
             model: Course,
