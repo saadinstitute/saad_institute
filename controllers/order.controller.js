@@ -1,6 +1,5 @@
 const BaseResponse = require('../models/base_response');
 const Order = require('../models/order');
-const Reservation = require('../models/reservation');
 const Resturant = require('../models/resturant');
 const User = require('../models/user');
 const OrderMeal = require('../models/order_meal');
@@ -10,14 +9,14 @@ const { Op } = require("sequelize");
 const order = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        let { details } = req.body;
+        let { orderDetails } = req.body;
         const user = await validateUser(req);
         let order = await Order.create({ userId: user.id, status: "pending" });
-        for (let index = 0; index < details.length; index++) {
-            let detail = details[index];
+        for (let index = 0; index < orderDetails.length; index++) {
+            let detail = orderDetails[index];
             detail.orderId = order.id;
         }
-        const orderMeals = await OrderMeal.bulkCreate(details);
+        const orderMeals = await OrderMeal.bulkCreate(orderDetails);
         order.details = orderMeals;
         res.send(new BaseResponse({ data: order, success: true, msg: "success", lang }));
     } catch (error) {
@@ -42,7 +41,7 @@ const getAllOrders = async (req, res) => {
         }
         if (user.role === "user") {
             query.userId = user.id;
-            include.push(Resturant);
+            // include.push(Resturant);
         }
         if (status !== "");
             query.status = status;

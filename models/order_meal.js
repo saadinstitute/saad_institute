@@ -29,4 +29,4 @@ const OrderMeal = dbConnection.define('order_meal', {
     freezeTableName: true
 });
 
-module.exports = Order;
+module.exports = OrderMeal;

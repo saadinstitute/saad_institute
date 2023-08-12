@@ -86,6 +86,9 @@ Delivery.hasOne(Resturant);
 
 Order.belongsTo(User);
 Order.hasMany(Reservation);
+Order.hasMany(OrderMeal);
+
+OrderMeal.belongsTo(Order);
 
 Notification.belongsTo(User);
 Notification.belongsTo(Order);
