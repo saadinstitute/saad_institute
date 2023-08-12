@@ -37,7 +37,7 @@ const getAllOrders = async (req, res) => {
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        let include = [OrderMeal];
+        let include = [];
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
             query.resturantId = resturant.id;
@@ -49,7 +49,14 @@ const getAllOrders = async (req, res) => {
         }
         if (status !== "");
         query.status = status;
-        const data = await Order.findAndCountAll({ where: query, offset: start * size, limit: size, include: include, attributes: { exclude: ["userId", "resturantId", "orderId"] } });
+        const data = await Order.findAndCountAll({
+            where: query, offset: start * size, limit: size,
+            include: [{
+                model: OrderMeal,
+                include: Meal
+            }, ...include],
+            attributes: { exclude: ["userId", "resturantId", "orderId"] }
+        });
         let orders = data.rows;
         const ordersCount = data.count;
         for (let i = 0; i < orders.length; i++) {
