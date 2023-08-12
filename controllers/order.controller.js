@@ -12,8 +12,8 @@ const order = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         let { orderDetails } = req.body;
-        if(orderDetails.length === 0)
-            return res.send(new BaseResponse({success: false, status: 400, msg: "should be at least one meal"}));
+        if (orderDetails.length === 0)
+            return res.send(new BaseResponse({ success: false, status: 400, msg: "should be at least one meal" }));
         const user = await validateUser(req);
         let order = await Order.create({ userId: user.id, status: "pending" });
         for (let index = 0; index < orderDetails.length; index++) {
@@ -48,7 +48,7 @@ const getAllOrders = async (req, res) => {
             // include.push(Resturant);
         }
         if (status !== "");
-            query.status = status;
+        query.status = status;
         const data = await Order.findAndCountAll({ where: query, offset: start * size, limit: size, include: include, attributes: { exclude: ["userId", "resturantId", "orderId"] } });
         let orders = data.rows;
         const ordersCount = data.count;
@@ -74,11 +74,10 @@ const updateStatus = async (req, res) => {
         const order = await Order.findByPk(id);
         if (status && status !== "") order.status = status;
         await order.save();
-      if(status=="preparing"){
-        const theMeal = await Meal.findByPk(order.mealId)
-        console.log(theMeal.resturantId)
-        add_popularity(theMeal.resturantId , 1  ,"0") 
-      }
+        if (status === "preparing") {
+            const theMeal = await Meal.findByPk(order.mealId);
+            add_popularity(theMeal.resturantId, 1, "0");
+        }
         res.send(new BaseResponse({ data: order, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
