@@ -61,11 +61,10 @@ const getAllOrders = async (req, res) => {
         const editedOrders = [];
         const ordersCount = data.count;
         for (let i = 0; i < orders.length; i++) {
-            let order = orders[i];
-            const resturantId = order.order_meals[0].resturantId;
+            editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
+            const resturantId = editedOrders[i].order_meals[0].resturantId;
             const resturant = await Resturant.findByPk(resturantId);
-            order.resturant = resturant;
-            editedOrders.push(order);
+            editedOrders[i].resturant = resturant;
         }
         res.send(new BaseResponse({ data: editedOrders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
