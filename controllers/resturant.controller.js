@@ -39,7 +39,6 @@ const addResturant = async (req, res) => {
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
     }
 };
-
 const getResturants = async (req, res) => {
     const lang = req.headers["lang"];
     try {
@@ -66,6 +65,29 @@ const getResturants = async (req, res) => {
         if (userId)
             query.userId = userId;
         const data = await Resturant.findAndCountAll({ where: query, offset: start * size, limit: size });
+        let resturants = data.rows;
+        let resturantsCount = data.count;
+        res.send(new BaseResponse({ data: resturants, success: true, msg: "success", lang, pagination: { total: resturantsCount, page: start, pageSize: size } }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
+    }
+};
+
+const getPopularityResturants = async (req, res) => {
+    const lang = req.headers["lang"];
+    try {
+        const user = await validateUser(req);
+        const { pageSize = 10, page = 0 } = req.query;
+        const size = Number(pageSize) ?? 10;
+        const start = Number(page) ?? 0;
+         let userId = user.role == "admin" ? user.id : null;
+         let query = {};
+        if (userId)
+            query.userId = userId;
+        const data = await Resturant.findAndCountAll({ where: query, offset: start * size, limit: size,order: [
+            ['popularity', 'DESC'],
+        ], },);
         let resturants = data.rows;
         let resturantsCount = data.count;
         res.send(new BaseResponse({ data: resturants, success: true, msg: "success", lang, pagination: { total: resturantsCount, page: start, pageSize: size } }));
@@ -136,4 +158,4 @@ function getFormFromReq(req) {
 }
 
 
-module.exports = { addResturant, getResturants, updateResturant, deleteResturant, donate };
+module.exports = { addResturant, getResturants, updateResturant, deleteResturant, donate,getPopularityResturants };

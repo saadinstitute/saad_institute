@@ -109,6 +109,6 @@ app.use(reservationRouter);
 app.use(orderRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-    await dbConnection.sync({alter: false, force: false});
+  await dbConnection.sync({alter: false, force: false});
     console.log(`Example app listening on port ${port}`);
 })

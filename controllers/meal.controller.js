@@ -4,6 +4,7 @@ const Resturant = require('../models/resturant');
 const Category = require('../models/category');
 const MealUserFav = require('../models/meal_user_fav');
 const cloudinary = require('../others/cloudinary.config');
+const add_popularity = require('../others/add_popularity');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
@@ -11,12 +12,21 @@ const { Op } = require("sequelize");
 const editFavMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { mealId, isFav } = req.body;
+        const {  mealId, isFav } = req.body;
         const user = await validateUser(req);
         if (!mealId) {
             return res.send(new BaseResponse({ success: false, msg: `mealId is required`, status: 400, lang }));
         }
+      var old_data = await MealUserFav.findOne({ where: { mealId:mealId,userId :user.id} });
+      if(!old_data){
+        const thefav = await Meal.findByPk(mealId)
+        console.log(thefav.resturantId)
+        add_popularity(thefav.resturantId , Number(isFav)  ,user.id) 
+      }
+      
+      
         await MealUserFav.upsert({ userId: user.id, mealId, isFav });
+        
         res.send(new BaseResponse({ success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -74,6 +84,7 @@ const getMeals = async (req, res) => {
                     }
                 }
             ];
+          
         }
         if (resturantId) query.resturantId = resturantId;
         if (categoryId) query.categoryId = categoryId;
@@ -88,6 +99,12 @@ const getMeals = async (req, res) => {
         if(isFav === 'true'){
             userFavWhere.isFav= true;
         }
+      if(resturantId!=null && user.id!=null){
+      add_popularity(resturantId , 1  , user.id)
+      
+      }
+      
+      
         const data = await Meal.findAndCountAll({
             where: query,
             offset: start * size,
@@ -112,6 +129,14 @@ const getMeals = async (req, res) => {
 
         const meals = data.rows;
         const mealsCount = data.count;
+        if(search!=null){
+         if(mealsCount>=1) add_popularity(meals[0].resturantId , 3  , user.id) 
+         if(mealsCount>=2) add_popularity(meals[1].resturantId , 2  , user.id) 
+         if(mealsCount>=3) add_popularity(meals[2].resturantId , 1  , user.id) 
+        }
+        
+        
+      
         let editedMeals = [];
         for (let index = 0; index < meals.length; index++) {
             editedMeals[index] = JSON.parse(JSON.stringify(meals[index].dataValues));
@@ -136,14 +161,20 @@ const updateMeal = async (req, res) => {
         const data = await getFormFromReq(req);
         const { arName, enName, enDescription, arDescription, categoryId, resturantId, price, discount, id } = data;
         const user = await validateAdmin(req);
-        const resturant = await Resturant.findByPk(resturantId);
-        if (!resturant) return res.send(new BaseResponse({ success: false, msg: "resturant not fount", status: 400, lang }));
+        if (resturantId) {
+            const resturant = await Resturant.findByPk(resturantId);
+          if (!resturant) return res.send(new BaseResponse({ success: false, msg: "resturant not fount", status: 400, lang }));
+        }
         if (categoryId) {
             const category = await Category.findOne({ where: { id: categoryId } });
             if (!category) return res.send(new BaseResponse({ success: false, msg: "category not fount", status: 400, lang }));
         }
-        if (user.role !== "superAdmin" && resturant.userId !== user.id) {
-            return res.send(new BaseResponse({ success: false, msg: "you don't have permission to edit this meal", status: 403, lang }));
+        if (resturantId) {
+     //      const resturant = await Resturant.findOne({ where: { id: resturantId } });
+            const resturant = await Resturant.findByPk(resturantId); 
+          if (user.role !== "superAdmin" && resturant.userId !== user.id) {
+              return res.send(new BaseResponse({ success: false, msg: "you don't have permission to edit this meal", status: 403, lang }));
+          }
         }
         const meal = await Meal.findByPk(id);
         if (!meal) {
