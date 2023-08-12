@@ -62,9 +62,7 @@ const getAllOrders = async (req, res) => {
         const ordersCount = data.count;
         for (let i = 0; i < orders.length; i++) {
             editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
-            const resturantId = editedOrders[i].order_meals[0].resturantId;
-            console.log(editedOrders[i].order_meals[0]);
-            console.log(editedOrders[i].order_meals[0].resturantId);
+            const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
             const resturant = await Resturant.findByPk(resturantId);
             editedOrders[i].resturant = resturant;
         }
