@@ -53,7 +53,7 @@ const getAllOrders = async (req, res) => {
             where: query, offset: start * size, limit: size,
             include: [{
                 model: OrderMeal,
-                include: Meal
+                include: Meal,
             }, ...include],
             attributes: { exclude: ["userId", "resturantId", "orderId"] }
         });
@@ -63,6 +63,8 @@ const getAllOrders = async (req, res) => {
         for (let i = 0; i < orders.length; i++) {
             editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
             const resturantId = editedOrders[i].order_meals[0].resturantId;
+            console.log(editedOrders[i].order_meals[0]);
+            console.log(editedOrders[i].order_meals[0].resturantId);
             const resturant = await Resturant.findByPk(resturantId);
             editedOrders[i].resturant = resturant;
         }
