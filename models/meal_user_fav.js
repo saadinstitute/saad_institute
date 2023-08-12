@@ -3,6 +3,11 @@ const dbConnection = require("../database/db");
 const Meal = require("./meal");
 const User = require("./user");
 const MealUserFav = dbConnection.define('meal_user_fav', {
+    id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+    },
     mealId: {
         type: DataTypes.UUID,
         allowNull: false,

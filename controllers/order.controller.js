@@ -34,7 +34,7 @@ const getAllOrders = async (req, res) => {
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        let include = [Order];
+        let include = [OrderMeal];
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
             query.resturantId = resturant.id;

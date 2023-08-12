@@ -30,6 +30,7 @@ const Order = require('./models/order.js');
 const OrderMeal = require('./models/order_meal.js');
 const Reservation = require('./models/reservation.js');
 const Delivery = require('./models/delivery.js');
+const Notification = require('./models/notification.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
@@ -39,10 +40,14 @@ app.use(express.json());
 
 User.hasMany(Resturant);
 User.hasMany(MealUserFav);
+User.hasMany(Notification);
 User.hasMany(Order);
 User.belongsTo(Reservation);
 User.belongsToMany(Meal, { through: MealUserFav });
 User.belongsToMany(Course, { through: CourseUser });
+
+// MealUserFav.belongsTo(User);
+// MealUserFav.belongsTo(Meal);
 
 Resturant.hasMany(Meal);
 Resturant.hasMany(Reservation);
@@ -61,19 +66,30 @@ Meal.belongsTo(Category);
 Meal.belongsToMany(User, { through: MealUserFav });
 Meal.belongsToMany(Order, { through: OrderMeal });
 
-Course.belongsToMany(CourseMeal, {through: MealsInCourses, foreignKey:"courseId"});
+// Course.belongsToMany(CourseMeal, {through: MealsInCourses, foreignKey:"courseId"});
 Course.belongsToMany(User, {through: CourseUser});
 Course.hasMany(CourseUser);
+Course.hasMany(MealsInCourses);
 
-CourseMeal.belongsToMany(Course, {through: MealsInCourses, foreignKey:"mealId"});
+// MealsInCourses.belongsTo(Course);
+// MealsInCourses.belongsTo(CourseMeal);
+
+// CourseMeal.belongsToMany(Course, {through: MealsInCourses, foreignKey:"mealId"});
+CourseMeal.hasMany(MealsInCourses);
 
 Reservation.belongsTo(Order);
 Reservation.belongsTo(User);
 Reservation.belongsTo(Resturant);
+Reservation.hasMany(Notification);
 
 Delivery.hasOne(Resturant);
 
 Order.belongsTo(User);
+Order.hasMany(Reservation);
+
+Notification.belongsTo(User);
+Notification.belongsTo(Order);
+Notification.belongsTo(Reservation);
 
 app.use(middleware);
 app.use(userRouter);
