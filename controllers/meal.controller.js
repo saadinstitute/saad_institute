@@ -103,8 +103,6 @@ const getMeals = async (req, res) => {
             add_popularity(resturantId, 1, user.id)
 
         }
-
-
         const data = await Meal.findAndCountAll({
             where: query,
             offset: start * size,
@@ -134,9 +132,6 @@ const getMeals = async (req, res) => {
             if (mealsCount >= 2) add_popularity(meals[1].resturantId, 2, user.id)
             if (mealsCount >= 3) add_popularity(meals[2].resturantId, 1, user.id)
         }
-
-
-
         let editedMeals = [];
         for (let index = 0; index < meals.length; index++) {
             editedMeals[index] = JSON.parse(JSON.stringify(meals[index].dataValues));

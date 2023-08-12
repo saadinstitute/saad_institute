@@ -49,5 +49,6 @@
     "you cann't subscribe to the same course twice":"You cann't subscribe to the same course twice",
     "you are not subscribed to this course":"You are not subscribed to this course",
     "unsubscribed successfully":"unsubscribed successfully",
-    "there is no delivery company with the id":"There is no delivery company with the id"
+    "there is no delivery company with the id":"There is no delivery company with the id",
+    "should be at least one meal":"Should be at least one meal"
 }

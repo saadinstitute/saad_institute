@@ -3,6 +3,6 @@ const orderController = require('../controllers/order.controller');
 
 router.post('/order', orderController.order);
 router.get('/order/list', orderController.getAllOrders);
-router.put('/order', orderController.updateStatus);
+router.put('/order/:id', orderController.updateStatus);
 
 module.exports = router;

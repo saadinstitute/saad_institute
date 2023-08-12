@@ -12,6 +12,8 @@ const order = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         let { orderDetails } = req.body;
+        if(orderDetails.length === 0)
+            return res.send(new BaseResponse({success: false, status: 400, msg: "should be at least one meal"}));
         const user = await validateUser(req);
         let order = await Order.create({ userId: user.id, status: "pending" });
         for (let index = 0; index < orderDetails.length; index++) {
@@ -48,8 +50,14 @@ const getAllOrders = async (req, res) => {
         if (status !== "");
             query.status = status;
         const data = await Order.findAndCountAll({ where: query, offset: start * size, limit: size, include: include, attributes: { exclude: ["userId", "resturantId", "orderId"] } });
-        const orders = data.rows;
+        let orders = data.rows;
         const ordersCount = data.count;
+        for (let i = 0; i < orders.length; i++) {
+            let order = orders[i];
+            const resturantId = order.orderMeals[0].resturantId;
+            const resturant = await Resturant.findByPk(resturantId);
+            order.resturant = resturant;
+        }
         res.send(new BaseResponse({ data: orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);

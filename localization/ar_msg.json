@@ -49,5 +49,6 @@
     "you cann't subscribe to the same course twice":"لايمكنك الاشتراك بالكورس نفسه مرتين",
     "you are not subscribed to this course":"انت غير مشترك بهذا الكورس",
     "unsubscribed successfully":"تم الغاء الاشتراك بنجاح",
-    "there is no delivery company with the id":"شركة التوصيل غير موجودة"
+    "there is no delivery company with the id":"شركة التوصيل غير موجودة",
+    "should be at least one meal":"يجب ان يحوي الطلب على وجبة واحدة فقط"
 }
