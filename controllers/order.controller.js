@@ -57,15 +57,17 @@ const getAllOrders = async (req, res) => {
             }, ...include],
             attributes: { exclude: ["userId", "resturantId", "orderId"] }
         });
-        let orders = data.rows;
+        const orders = data.rows;
+        const editedOrders = [];
         const ordersCount = data.count;
         for (let i = 0; i < orders.length; i++) {
             let order = orders[i];
             const resturantId = order.order_meals[0].resturantId;
             const resturant = await Resturant.findByPk(resturantId);
             order.resturant = resturant;
+            editedOrders.push(order);
         }
-        res.send(new BaseResponse({ data: orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
+        res.send(new BaseResponse({ data: editedOrders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang: lang }));
