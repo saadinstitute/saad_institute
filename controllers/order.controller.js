@@ -61,10 +61,7 @@ const getAllOrders = async (req, res) => {
         const ordersCount = data.count;
         for (let i = 0; i < orders.length; i++) {
             let order = orders[i];
-            console.log(order);
-            console.log(order.orderMeals);
-            console.log(order.orderMeals[0]);
-            const resturantId = order.orderMeals[0].resturantId;
+            const resturantId = order.order_meals[0].resturantId;
             const resturant = await Resturant.findByPk(resturantId);
             order.resturant = resturant;
         }
