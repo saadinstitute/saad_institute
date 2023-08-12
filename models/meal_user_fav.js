@@ -7,6 +7,7 @@ const MealUserFav = dbConnection.define('meal_user_fav', {
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
     },
     mealId: {
         type: DataTypes.UUID,
