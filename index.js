@@ -42,7 +42,7 @@ User.hasMany(Resturant);
 User.hasMany(MealUserFav);
 User.hasMany(Notification);
 User.hasMany(Order);
-User.belongsTo(Reservation);
+// User.belongsTo(Reservation);
 User.belongsToMany(Meal, { through: MealUserFav });
 User.belongsToMany(Course, { through: CourseUser });
 
@@ -77,6 +77,8 @@ Course.hasMany(MealsInCourses);
 // CourseMeal.belongsToMany(Course, {through: MealsInCourses, foreignKey:"mealId"});
 CourseMeal.hasMany(MealsInCourses);
 
+
+
 Reservation.belongsTo(Order);
 Reservation.belongsTo(User);
 Reservation.belongsTo(Resturant);
@@ -110,6 +112,6 @@ app.use(reservationRouter);
 app.use(orderRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-  await dbConnection.sync({alter: false, force: false});
+  await dbConnection.sync({alter: true, force: false});
     console.log(`Example app listening on port ${port}`);
 })

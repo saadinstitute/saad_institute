@@ -6,7 +6,7 @@ const User = require('../models/user');
 const add_popularity = require('../others/add_popularity');
 const OrderMeal = require('../models/order_meal');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
-const { Op } = require("sequelize");
+const { Op, QueryTypes } = require("sequelize");
 const sequelize = require("../database/db");
 
 const order = async (req, res) => {
@@ -39,35 +39,33 @@ const getAllOrders = async (req, res) => {
         const start = Number(page) ?? 0;
         let query = {};
         let include = [];
+        // const or =await sequelize.query("select * as `order.order_meal.meal` from order",{
+        //     nest: true,
+        //     type: QueryTypes.SELECT
+        // });
+        // return res.send(or);
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
-            query.id = {
-                [Op.in]: await OrderMeal.findAll({
-                    where: {
-                        mealId: {
-                            [Op.in]: await Meal.findAll({
-                                where: {
-                                    resturantId: resturant.id
-                                }
-                            })
-                        }
-                    }
-                })
-            };
             include.push(User);
+            include.push({
+                model: OrderMeal,
+                include: {
+                    model: Meal,
+                    where: {
+                        resturantId: resturant.id
+                    }
+                },
+            });
         }
         if (user.role === "user") {
             query.userId = user.id;
-            // include.push(Resturant);
+            include.push(OrderMeal);
         }
         if (status !== "");
         query.status = status;
         const data = await Order.findAndCountAll({
             where: query, offset: start * size, limit: size,
-            include: [{
-                model: OrderMeal,
-                include: Meal,
-            }, ...include],
+            include: include,
             attributes: { exclude: ["userId"] }
         });
         const orders = data.rows;
@@ -81,7 +79,7 @@ const getAllOrders = async (req, res) => {
                 editedOrders[i].resturant = resturant;
             }
         }
-        res.send(new BaseResponse({ data: user.role === "user"?editedOrders:orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
+        res.send(new BaseResponse({ data: orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang: lang }));

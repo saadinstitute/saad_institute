@@ -36,6 +36,10 @@ const User = dbConnection.define('user', {
             isUrl: true
         }
     },
+    fbToken: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     dateOfBirth: {
         type: DataTypes.DATE,
         allowNull: false,
