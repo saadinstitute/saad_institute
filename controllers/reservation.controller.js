@@ -13,7 +13,7 @@ const reserve = async (req, res) => {
         const { resturantId, reserveAt, peapleCount } = req.body;
         const user = await validateUser(req);
         const reserve = await Reservation.create({ resturantId, peaple_count: Number(peapleCount), reserveAt: Date.parse(reserveAt), userId: user.id, status: "pending" });
-        const resturantOwner = await sequelize.query(`select u.* from user as u, resturant as r where r.userId = u.id and r.id = ${resturantId}`, {
+        const resturantOwner = await sequelize.query(`select u.* from user as u, resturant as r where r.userId = u.id and r.id = "${resturantId}"`, {
             model: User,
             mapToModel: true
           });
