@@ -3,6 +3,7 @@ const Order = require('../models/order');
 const Reservation = require('../models/reservation');
 const Resturant = require('../models/resturant');
 const User = require('../models/user');
+const Notification = require('../models/notification');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
 const sequelize = require("../database/db");
