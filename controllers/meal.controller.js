@@ -127,7 +127,7 @@ const getMeals = async (req, res) => {
 
         const meals = data.rows;
         const mealsCount = data.count;
-        if (search != null) {
+        if (search != null && search !== "") {
             if (mealsCount >= 1) add_popularity(meals[0].resturantId, 3, user.id)
             if (mealsCount >= 2) add_popularity(meals[1].resturantId, 2, user.id)
             if (mealsCount >= 3) add_popularity(meals[2].resturantId, 1, user.id)
