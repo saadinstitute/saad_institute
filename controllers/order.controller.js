@@ -60,13 +60,15 @@ const getAllOrders = async (req, res) => {
         const orders = data.rows;
         const editedOrders = [];
         const ordersCount = data.count;
-        for (let i = 0; i < orders.length; i++) {
-            editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
-            const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
-            const resturant = await Resturant.findByPk(resturantId);
-            editedOrders[i].resturant = resturant;
+        if (user.role === "user") {
+            for (let i = 0; i < orders.length; i++) {
+                editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
+                const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
+                const resturant = await Resturant.findByPk(resturantId);
+                editedOrders[i].resturant = resturant;
+            }
         }
-        res.send(new BaseResponse({ data: editedOrders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
+        res.send(new BaseResponse({ data: user.role === "user"?editedOrders:orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang: lang }));
