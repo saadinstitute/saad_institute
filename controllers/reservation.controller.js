@@ -64,6 +64,9 @@ const updateStatus = async (req, res) => {
         const reservation = await Reservation.findByPk(id);
         if (status && status !== "") reservation.status = status;
         await reservation.save();
+        if(status === "accepted"){
+            await Notification.create({reservationId: reservation.id, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد"});
+        }
         res.send(new BaseResponse({ data: reservation, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);

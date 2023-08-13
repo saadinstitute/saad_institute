@@ -110,7 +110,7 @@ const addUser = async (req, res) => {
 const login = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { email, password, app } = req.body;
+        const { email, password, app, fbToken } = req.body;
         if (!app) {
             return res.send(new BaseResponse({ msg: "app field is required", status: 400, success: false, lang }));
         }
@@ -132,6 +132,10 @@ const login = async (req, res) => {
             return res.send(new BaseResponse({ msg: "this account is not a superAdmin", status: 403, success: false, lang }));
         }
         if (appNum < 1 || appNum > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false, lang }));
+        if(fbToken){
+            user.fbToken = fbToken;
+            await user.save();
+        }
         user.password = undefined;
         res.send(new BaseResponse({ data: { user, "token": generateToken(user.id) }, success: true, msg: "success", lang }));
     } catch (e) {
