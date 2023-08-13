@@ -7,6 +7,7 @@ const add_popularity = require('../others/add_popularity');
 const OrderMeal = require('../models/order_meal');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
+const sequelize = require("../database/db");
 
 const order = async (req, res) => {
     const lang = req.headers["lang"];
@@ -40,7 +41,19 @@ const getAllOrders = async (req, res) => {
         let include = [];
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
-            query.resturantId = resturant.id;
+            query.id = {
+                in: await OrderMeal.findAll({
+                    where: {
+                        mealId: {
+                            in: await Meal.findAll({
+                                where: {
+                                    resturantId: resturant.id
+                                }
+                            })
+                        }
+                    }
+                })
+            };
             include.push(User);
         }
         if (user.role === "user") {
@@ -55,7 +68,7 @@ const getAllOrders = async (req, res) => {
                 model: OrderMeal,
                 include: Meal,
             }, ...include],
-            attributes: { exclude: ["userId", "resturantId", "orderId"] }
+            attributes: { exclude: ["userId"] }
         });
         const orders = data.rows;
         const editedOrders = [];
