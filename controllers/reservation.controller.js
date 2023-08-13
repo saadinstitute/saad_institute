@@ -5,6 +5,7 @@ const Resturant = require('../models/resturant');
 const User = require('../models/user');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
+const sequelize = require("../database/db");
 
 const reserve = async (req, res) => {
     const lang = req.headers["lang"];
@@ -12,6 +13,11 @@ const reserve = async (req, res) => {
         const { resturantId, reserveAt, peapleCount } = req.body;
         const user = await validateUser(req);
         const reserve = await Reservation.create({ resturantId, peaple_count: Number(peapleCount), reserveAt: Date.parse(reserveAt), userId: user.id, status: "pending" });
+        const resturantOwner = await sequelize.query(`select u.* from user as u and resturant as r where r.userId = u.id and r.id = ${resturantId}`, {
+            model: User,
+            mapToModel: true
+          });
+        await Notification.create({ reservationId: reserve.id, userId: resturantOwner.id, title: "حجز جديد", body: "يرجى قبول او رفض الحجز"});
         res.send(new BaseResponse({ data: reserve, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);

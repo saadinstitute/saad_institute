@@ -39,11 +39,6 @@ const getAllOrders = async (req, res) => {
         const start = Number(page) ?? 0;
         let query = {};
         let include = [];
-        // const or =await sequelize.query("select * as `order.order_meal.meal` from order",{
-        //     nest: true,
-        //     type: QueryTypes.SELECT
-        // });
-        // return res.send(or);
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
             include.push(User);
