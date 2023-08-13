@@ -42,10 +42,10 @@ const getAllOrders = async (req, res) => {
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
             query.id = {
-                in: await OrderMeal.findAll({
+                [Op.in]: await OrderMeal.findAll({
                     where: {
                         mealId: {
-                            in: await Meal.findAll({
+                            [Op.in]: await Meal.findAll({
                                 where: {
                                     resturantId: resturant.id
                                 }
