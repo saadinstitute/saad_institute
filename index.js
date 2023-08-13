@@ -15,6 +15,7 @@ const mealCourseRouter = require('./routes/meal_course.route.js');
 const deliveryRouter = require('./routes/delivery.route.js');
 const reservationRouter = require('./routes/reservation.route.js');
 const orderRouter = require('./routes/order.route.js');
+const notificationRouter = require('./routes/notification.rout.js');
 const MealUserFav = require('./models/meal_user_fav.js');
 const Meal = require('./models/meal.js');
 const Category = require('./models/category.js');
@@ -110,8 +111,9 @@ app.use(mealCourseRouter);
 app.use(deliveryRouter);
 app.use(reservationRouter);
 app.use(orderRouter);
+app.use(notificationRouter);
 
 app.listen(port, "0.0.0.0", async () => {
-  await dbConnection.sync({alter: true, force: false});
+  await dbConnection.sync({alter: false, force: false});
     console.log(`Example app listening on port ${port}`);
 })
