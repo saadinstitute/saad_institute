@@ -56,6 +56,7 @@ const getAllOrders = async (req, res) => {
         if (user.role === "user") {
             query.userId = user.id;
             include.push(Resturant);
+            include.push(OrderMeal);
         }
         if (status !== "");
         query.status = status;
