@@ -35,14 +35,22 @@ const Notification = dbConnection.define('notification', {
             key: "id"
         }
     },
-    title: {
+    titleAr: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    body: {
+    bodyAr: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    titleEn: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    bodyEn: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 },{
     timestamps: true,
     freezeTableName: true

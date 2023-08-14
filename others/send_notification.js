@@ -5,12 +5,12 @@ const notification_options = {
     priority: "high",
     timeToLive: 60 * 60 * 24
 };
-const sendNotification = async ({ token, title, body, userId, resId, orderId }) => {
-    const n = await Notification.create({ reservationId: resId, userId, title, body, orderId: orderId });
+const sendNotification = async ({ token, titleAr, bodyAr, titleEn, bodyEn, userId, resId, orderId }) => {
+    const n = await Notification.create({ reservationId: resId, userId, titleAr, bodyAr, titleEn, bodyEn, orderId: orderId });
     const message_notification = {
         notification: {
-            title: title,
-            body: body
+            title: titleAr,
+            body: bodyAr
         }
     };
     if (token) {

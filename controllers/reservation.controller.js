@@ -20,7 +20,7 @@ const reserve = async (req, res) => {
             mapToModel: true
           });
         const owner = JSON.parse(JSON.stringify(resturantOwner))[0];
-        await sendNotification({token: owner.fbToken, title: "حجز جديد",body: "يرجى قبول او رفض الحجز", userId: owner.id ,resId: reserve.id});
+        await sendNotification({token: owner.fbToken, titleAr: "حجز جديد", titleEn:"New Reservation",bodyAr: "يرجى قبول او رفض الحجز", bodyEn: "Please accept or refuce the reservation", userId: owner.id ,resId: reserve.id});
         res.send(new BaseResponse({ data: reserve, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -68,9 +68,9 @@ const updateStatus = async (req, res) => {
         await reservation.save();
         const client = await User.findByPk(reservation.userId);
         if(status === "accepted"){
-            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد", resId: reservation.id});
+            await sendNotification({token: client.fbToken, userId: reservation.userId, titleAr: "تم قبول الحجز", titleEn:"your reservation has been accepted", bodyAr: "يرجى الوصول على الموعد", bodyEn:"Please arrive on the time", resId: reservation.id});
         } else if(status === "canceled"){
-            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "عذراً", body: "تم إلغاء الحجز", resId: reservation.id});
+            await sendNotification({token: client.fbToken, userId: reservation.userId, titleAr: "عذراً",titleEn:"Sorry", bodyAr: "تم إلغاء الحجز", bodyEn:"The reservation has been canceled", resId: reservation.id});
         }
         res.send(new BaseResponse({ data: reservation, success: true, msg: "updated successfully", lang }));
     } catch (error) {
