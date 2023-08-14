@@ -114,6 +114,6 @@ app.use(orderRouter);
 app.use(notificationRouter);
 
 app.listen("8080", "0.0.0.0", async () => {
-  await dbConnection.sync({alter: true, force: false});
+  await dbConnection.sync({alter: false, force: false});
     console.log(`Example app listening on port ${port}`);
 })
