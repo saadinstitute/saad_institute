@@ -18,7 +18,7 @@ const reserve = async (req, res) => {
             model: User,
             mapToModel: true
           });
-          console.log(resturantOwner);
+        console.log(resturantOwner);
         await Notification.create({ reservationId: reserve.id, userId: resturantOwner.id, title: "حجز جديد", body: "يرجى قبول او رفض الحجز"});
         res.send(new BaseResponse({ data: reserve, success: true, msg: "success", lang }));
     } catch (error) {
