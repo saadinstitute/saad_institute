@@ -31,15 +31,14 @@ const reserve = async (req, res) => {
 const getAllReservations = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, status = "" } = req.query;
+        const { pageSize = 10, page = 0, status = "", resturantId } = req.query;
         const user = await validateUser(req);
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
         let include = [Order];
         if (user.role === "admin") {
-            const resturant = await Resturant.findOne({ userId: user.id });
-            query.resturantId = resturant.id;
+            query.resturantId = resturantId;
             include.push(User);
         }
         if (user.role === "user") {
