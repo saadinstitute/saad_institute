@@ -7,6 +7,7 @@ const Notification = require('../models/notification');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
 const sequelize = require("../database/db");
+const sendNotification = require('../others/send_notification');
 
 const reserve = async (req, res) => {
     const lang = req.headers["lang"];
@@ -18,8 +19,8 @@ const reserve = async (req, res) => {
             model: User,
             mapToModel: true
           });
-        console.log(resturantOwner);
-        await Notification.create({ reservationId: reserve.id, userId: resturantOwner.id, title: "حجز جديد", body: "يرجى قبول او رفض الحجز"});
+        const owner = JSON.parse(JSON.stringify(resturantOwner))[0];
+        await sendNotification({token: owner.fbToken, title: "حجز جديد",body: "يرجى قبول او رفض الحجز", userId: owner.id ,resId: reserve.id});
         res.send(new BaseResponse({ data: reserve, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -66,8 +67,11 @@ const updateStatus = async (req, res) => {
         const reservation = await Reservation.findByPk(id);
         if (status && status !== "") reservation.status = status;
         await reservation.save();
+        const client = await User.findByPk(reservation.userId);
         if(status === "accepted"){
-            await Notification.create({reservationId: reservation.id, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد"});
+            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد", resId: reservation.id});
+        } else if(status === "canceled"){
+            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "عذراً", body: "تم إلغاء الحجز", resId: reservation.id});
         }
         res.send(new BaseResponse({ data: reservation, success: true, msg: "updated successfully", lang }));
     } catch (error) {

@@ -26,14 +26,14 @@ const Meal = dbConnection.define('meal', {
     //         key: 'id'
     //     }
     // },
-    // resturantId: {
-    //     type: Sequelize.UUID,
-    //     allowNull: false,
-    //     references: {
-    //         model: 'Resturant',
-    //         key: 'id'
-    //     }
-    // },
+    resturantId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+            model: Resturant,
+            key: 'id'
+        }
+    },
     imageUrl: {
         type: DataTypes.STRING,
         allowNull: true,

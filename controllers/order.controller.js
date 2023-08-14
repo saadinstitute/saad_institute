@@ -8,21 +8,25 @@ const OrderMeal = require('../models/order_meal');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op, QueryTypes } = require("sequelize");
 const sequelize = require("../database/db");
+const sendNotification = require('../others/send_notification');
 
 const order = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        let { orderDetails } = req.body;
+        let { orderDetails, resturantId } = req.body;
         if (orderDetails.length === 0)
             return res.send(new BaseResponse({ success: false, status: 400, msg: "should be at least one meal" }));
         const user = await validateUser(req);
-        let order = await Order.create({ userId: user.id, status: "pending" });
+        let order = await Order.create({ userId: user.id, status: "pending", resturantId });
         for (let index = 0; index < orderDetails.length; index++) {
             let detail = orderDetails[index];
             detail.orderId = order.id;
         }
         const orderMeals = await OrderMeal.bulkCreate(orderDetails);
         order.details = orderMeals;
+        const resturant = await Resturant.findByPk(resturantId);
+        const resturantOwner = await User.findByPk(resturant.userId);
+        await sendNotification({token: resturantOwner.fbToken, title: "طلبية جديدة",body: "يرجى قبول الطلبية والبدء بتحضيرها", userId: resturant.userId ,orderId: order.id});
         res.send(new BaseResponse({ data: order, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -92,9 +96,17 @@ const updateStatus = async (req, res) => {
         const order = await Order.findByPk(id);
         if (status && status !== "") order.status = status;
         await order.save();
+        const client = await User.findByPk(order.userId);
         if (status === "preparing") {
             const theMeal = await Meal.findByPk(order.mealId);
             add_popularity(theMeal.resturantId, 1, "0");
+            await sendNotification({token: client.fbToken, title: "إشعار طلبية",body: "تم البدء بتحضير الطبية", userId: client.id ,orderId: order.id});
+        } else if(status === "onTheWay"){
+            await sendNotification({token: client.fbToken, title: "إشعار طلبية",body: "تم الانتهاء من تحضير الطلبية وهي في طريقها اليك", userId: client.id ,orderId: order.id});
+        } else if(status === "delivered"){
+            await sendNotification({token: client.fbToken, title: "إشعار طلبية",body: "تم توصيل الطلبية", userId: client.id ,orderId: order.id});
+        } else if(status === "canceled"){
+            await sendNotification({token: client.fbToken, title: "إشعار طلبية",body: "تم الغاء الطلبية", userId: client.id ,orderId: order.id});
         }
         res.send(new BaseResponse({ data: order, success: true, msg: "updated successfully", lang }));
     } catch (error) {
