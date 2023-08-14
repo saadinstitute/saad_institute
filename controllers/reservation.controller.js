@@ -7,6 +7,7 @@ const Notification = require('../models/notification');
 const { validateAdmin, validateUser, validateSuperAdmin } = require("../others/validator");
 const { Op } = require("sequelize");
 const sequelize = require("../database/db");
+const sendNotification = require('../others/send_notification');
 
 const reserve = async (req, res) => {
     const lang = req.headers["lang"];
@@ -18,8 +19,8 @@ const reserve = async (req, res) => {
             model: User,
             mapToModel: true
           });
-          console.log(resturantOwner);
-        await Notification.create({ reservationId: reserve.id, userId: resturantOwner.id, title: "حجز جديد", body: "يرجى قبول او رفض الحجز"});
+        const owner = JSON.parse(JSON.stringify(resturantOwner))[0];
+        await sendNotification({token: owner.fbToken, title: "حجز جديد",body: "يرجى قبول او رفض الحجز", userId: owner.id ,resId: reserve.id});
         res.send(new BaseResponse({ data: reserve, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);

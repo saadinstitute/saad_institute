@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
 const config =  require('./config.js');
 const dbConnection = require('./database/db');
 const middleware = require('./others/middleware');
@@ -37,9 +35,7 @@ const Notification = require('./models/notification.js');
 
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+
 app.use(cors({origin: "*"}));
 app.use(express.json());
 
