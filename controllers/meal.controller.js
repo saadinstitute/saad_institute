@@ -99,7 +99,7 @@ const getMeals = async (req, res) => {
         if (isFav === 'true') {
             userFavWhere.isFav = true;
         }
-        if (resturantId != null && user.id != null) {
+        if (resturantId && user.id) {
             add_popularity(resturantId, 1, user.id)
 
         }
