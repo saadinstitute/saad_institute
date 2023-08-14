@@ -44,7 +44,10 @@ const getAllOrders = async (req, res) => {
         let query = {};
         let include = [{
             model: OrderMeal,
-            include: Meal,
+            include: {
+                model: Meal,
+                include: Resturant
+            },
         }];
         // return res.send(or);
         if (user.role === "admin") {
