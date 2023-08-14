@@ -67,8 +67,11 @@ const updateStatus = async (req, res) => {
         const reservation = await Reservation.findByPk(id);
         if (status && status !== "") reservation.status = status;
         await reservation.save();
+        const client = await User.findByPk(reservation.userId);
         if(status === "accepted"){
-            await Notification.create({reservationId: reservation.id, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد"});
+            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "تم قبول الحجز", body: "يرجى الوصول على الموعد", resId: reservation.id});
+        } else if(status === "canceled"){
+            await sendNotification({token: client.fbToken, userId: reservation.userId, title: "عذراً", body: "تم إلغاء الحجز", resId: reservation.id});
         }
         res.send(new BaseResponse({ data: reservation, success: true, msg: "updated successfully", lang }));
     } catch (error) {

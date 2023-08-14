@@ -7,14 +7,13 @@ const notification_options = {
   };
 const sendNotification = async ({token, title, body, userId, resId, orderId}) => {
     const n = await Notification.create({ reservationId: resId, userId, title, body, orderId: orderId});
-    console.log(n);
     const message_notification = {
         notification: {
             title: title,
             body: body
         }
     };
-    admin.messaging().sendToDevice(token, message_notification, notification_options);
+    await admin.messaging().sendToDevice(token, message_notification, notification_options);
 }
 
 

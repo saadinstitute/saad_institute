@@ -18,6 +18,14 @@ const Order = dbConnection.define('order', {
             key: "id"
         }
     },
+    resturantId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Resturant,
+            key: "id"
+        }
+    },
     status: {
         type: DataTypes.ENUM("pending", "preparing", "onTheWay", "delivered", "canceled"),
         allowNull: false
