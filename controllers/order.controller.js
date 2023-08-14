@@ -42,21 +42,19 @@ const getAllOrders = async (req, res) => {
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        let include = [];
+        let include = [{
+            model: OrderMeal,
+            include: Meal,
+        }];
         // return res.send(or);
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
             query.returantId = resturant.id;
             include.push(User);
-            include.push({
-                model: OrderMeal,
-                include: Meal,
-            });
         }
         if (user.role === "user") {
             query.userId = user.id;
             include.push(Resturant);
-            include.push(OrderMeal);
         }
         if (status !== "");
         query.status = status;
