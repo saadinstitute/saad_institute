@@ -51,6 +51,7 @@ User.belongsToMany(Course, { through: CourseUser });
 // MealUserFav.belongsTo(Meal);
 
 Resturant.hasMany(Meal);
+Resturant.hasMany(Order);
 Resturant.hasMany(Reservation);
 Resturant.belongsTo(User);
 Resturant.belongsTo(Delivery);
