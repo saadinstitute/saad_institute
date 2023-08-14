@@ -60,7 +60,7 @@ const getAllOrders = async (req, res) => {
         }
         if (user.role === "user") {
             query.userId = user.id;
-            include.push(Order);
+            include.push(Resturant);
         }
         if (status !== "");
         query.status = status;
@@ -70,17 +70,25 @@ const getAllOrders = async (req, res) => {
             attributes: { exclude: ["userId"] }
         });
         const orders = data.rows;
-        const editedOrders = [];
+        // const editedOrders = [];
         const ordersCount = data.count;
-        if (user.role === "user") {
-            for (let i = 0; i < orders.length; i++) {
-                editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
-                const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
-                const resturant = await Resturant.findByPk(resturantId);
-                editedOrders[i].resturant = resturant;
-            }
-        }
-        res.send(new BaseResponse({ data: user.role === "user"?editedOrders:orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
+        // if (user.role === "user") {
+        //     for (let i = 0; i < orders.length; i++) {
+        //         editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
+        //         const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
+        //         const resturant = await Resturant.findByPk(resturantId);
+        //         editedOrders[i].resturant = resturant;
+        //     }
+        // }
+        // if (user.role === "admin") {
+        //     for (let i = 0; i < orders.length; i++) {
+        //         editedOrders[i] = JSON.parse(JSON.stringify(orders[i].dataValues));
+        //         const resturantId = editedOrders[i].order_meals[0].meal.resturantId;
+        //         const resturant = await Resturant.findByPk(resturantId);
+        //         editedOrders[i].resturant = resturant;
+        //     }
+        // }
+        res.send(new BaseResponse({ data: orders, success: true, msg: "success", lang, pagination: { total: ordersCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang: lang }));
