@@ -122,7 +122,7 @@ const getMeals = async (req, res) => {
                 as: "meal_user_favs",
             }
             ],
-            attributes: { exclude: ["resturantId", "categoryId"] },
+            attributes: { exclude: ["categoryId"] },
         });
 
         const meals = data.rows;
