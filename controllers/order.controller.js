@@ -26,7 +26,7 @@ const order = async (req, res) => {
         order.details = orderMeals;
         const resturant = await Resturant.findByPk(resturantId);
         const resturantOwner = await User.findByPk(resturant.userId);
-        await sendNotification({token: resturantOwner.fbToken, titleAr: "طلبية جديدة", bodyAr: "يرجى قبول الطلبية والبدء بتحضيرها",titleAr: "New order", bodyAr: "please accept the order and start preparing it", userId: resturant.userId ,orderId: order.id});
+        await sendNotification({token: resturantOwner.fbToken, titleAr: "طلبية جديدة", bodyAr: "يرجى قبول الطلبية والبدء بتحضيرها",titleEn: "New order", bodyEn: "please accept the order and start preparing it", userId: resturant.userId ,orderId: order.id});
         res.send(new BaseResponse({ data: order, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -103,13 +103,13 @@ const updateStatus = async (req, res) => {
         if (status === "preparing") {
             const theMeal = await Meal.findByPk(order.mealId);
             add_popularity(theMeal.resturantId, 1, "0");
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم البدء بتحضير الطبية", bodyEn:"the order is preparing", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم البدء بتحضير الطبية", bodyEn:"the order is preparing", userId: client.id ,orderId: order.id});
         } else if(status === "onTheWay"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم الانتهاء من تحضير الطلبية وهي في طريقها اليك", bodyEn:"the order is on the way to you", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم الانتهاء من تحضير الطلبية وهي في طريقها اليك", bodyEn:"the order is on the way to you", userId: client.id ,orderId: order.id});
         } else if(status === "delivered"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم توصيل الطلبية", bodyEn:"the order is delivered", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم توصيل الطلبية", bodyEn:"the order is delivered", userId: client.id ,orderId: order.id});
         } else if(status === "canceled"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم الغاء الطلبية", bodyEn:"the order is canceled", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم الغاء الطلبية", bodyEn:"the order is canceled", userId: client.id ,orderId: order.id});
         }
         res.send(new BaseResponse({ data: order, success: true, msg: "updated successfully", lang }));
     } catch (error) {
