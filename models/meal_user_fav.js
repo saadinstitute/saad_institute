@@ -31,7 +31,8 @@ const MealUserFav = dbConnection.define('meal_user_fav', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = MealUserFav;

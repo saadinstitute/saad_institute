@@ -34,7 +34,8 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
     }
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

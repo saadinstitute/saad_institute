@@ -40,7 +40,8 @@ const CourseUser = dbConnection.define('course_user', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

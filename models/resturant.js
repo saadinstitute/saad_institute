@@ -68,7 +68,8 @@ const Resturant = dbConnection.define('resturant', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

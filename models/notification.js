@@ -53,7 +53,8 @@ const Notification = dbConnection.define('notification', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = Notification;

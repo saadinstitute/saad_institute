@@ -50,7 +50,8 @@ const Reservation = dbConnection.define('reservation', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = Reservation;

@@ -32,7 +32,8 @@ const Order = dbConnection.define('order', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = Order;

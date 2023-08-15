@@ -25,7 +25,8 @@ const CourseMeal = dbConnection.define('course_meal', {
     }
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

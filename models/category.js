@@ -27,7 +27,8 @@ const Category = dbConnection.define('category', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

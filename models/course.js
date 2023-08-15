@@ -37,7 +37,8 @@ const Course = dbConnection.define('course', {
     }
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 

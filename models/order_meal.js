@@ -26,7 +26,8 @@ const OrderMeal = dbConnection.define('order_meal', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = OrderMeal;

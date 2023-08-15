@@ -33,7 +33,8 @@ const Donate = dbConnection.define('donate', {
     },
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = Donate;

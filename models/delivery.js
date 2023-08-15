@@ -25,7 +25,8 @@ const Delivery = dbConnection.define('delivery', {
     }
 },{
     timestamps: true,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true
 });
 
 module.exports = Delivery;
