@@ -37,7 +37,7 @@ const order = async (req, res) => {
 const getAllOrders = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, status = "" } = req.query;
+        const { pageSize = 10, page = 0, status = "" , resturantId} = req.query;
         const user = await validateUser(req);
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
@@ -51,8 +51,7 @@ const getAllOrders = async (req, res) => {
         }];
         // return res.send(or);
         if (user.role === "admin") {
-            const resturant = await Resturant.findOne({ userId: user.id });
-            query.resturantId = resturant.id;
+            query.resturantId = resturantId;
             include.push(User);
         }
         if (user.role === "user") {
@@ -60,11 +59,11 @@ const getAllOrders = async (req, res) => {
             include.push(Resturant);
         }
         if (status !== "");
-        query.status = status;
+            query.status = status;
         const data = await Order.findAndCountAll({
             where: query, offset: start * size, limit: size,
             include: include,
-            attributes: { exclude: ["userId"] }
+            // attributes: { exclude: ["userId"] }
         });
         const orders = data.rows;
         // const editedOrders = [];
