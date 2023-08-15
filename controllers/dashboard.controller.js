@@ -8,6 +8,7 @@ const { Op } = require("sequelize");
 const Delivery = require('../models/delivery');
 const Order = require('../models/order');
 const Course = require('../models/course');
+const CourseMeal = require('../models/course_meal');
 
 const getHome = async (req, res) => {
     const lang = req.headers["lang"];
@@ -20,7 +21,8 @@ const getHome = async (req, res) => {
         const ordersCount = await Order.count();
         const deliveryCount = await Delivery.count();
         const courseCount = await Course.count();
-        let data = {resturantsCount, usersCount, categoriesCount, charityCount, mealsCount, ordersCount, deliveryCount, courseCount};
+        const mealsCourseCount = await CourseMeal.count();
+        let data = {resturantsCount, usersCount, categoriesCount, charityCount, mealsCount, ordersCount, deliveryCount, courseCount, mealsCourseCount};
         res.send(new BaseResponse({data, success: true, msg: "success", lang}));
     } catch (error) {
         res.send(new BaseResponse({success: false, msg: error, lang}));
