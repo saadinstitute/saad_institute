@@ -279,7 +279,7 @@ const deleteUser = async (req, res) => {
         const user = await User.findOne({ where:{ id }});
         if(!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
         if(reqestedBy.id === user.id) return res.send(new BaseResponse({ success: false, status: 404, msg: "you can't delete your account", lang }));
-        const isSuccess = !(!(await resturant.destroy()));
+        const isSuccess = !(!(await user.destroy()));
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
