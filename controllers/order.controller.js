@@ -52,7 +52,7 @@ const getAllOrders = async (req, res) => {
         // return res.send(or);
         if (user.role === "admin") {
             const resturant = await Resturant.findOne({ userId: user.id });
-            query.returantId = resturant.id;
+            query.resturantId = resturant.id;
             include.push(User);
         }
         if (user.role === "user") {

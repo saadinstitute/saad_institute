@@ -8,6 +8,7 @@ const MealsInCourses = dbConnection.define('meals_in_courses', {
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
     },
     mealId: {
         type: DataTypes.UUID,
