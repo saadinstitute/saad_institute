@@ -89,8 +89,9 @@ const deleteCourseFromMeal = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const { courseId, mealId } = req.body;
+        console.log(req.body);
         await validateSuperAdmin(req);
-        const row = await MealsInCourses.findOne({ where: { courseId, mealId } });
+        const row = await MealsInCourses.findOne({ where: { courseId: courseId, mealId: mealId } });
         const isSuccess = !(!(await row.destroy()));
         res.send(new BaseResponse({ success: isSuccess, msg: "success", lang }));
     } catch (error) {
