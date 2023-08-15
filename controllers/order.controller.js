@@ -103,13 +103,13 @@ const updateStatus = async (req, res) => {
         const client = await User.findByPk(order.userId);
         if (status === "preparing") {
             add_popularity(order.resturantId, 1, "0");
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم البدء بتحضير الطبية", bodyEn:"the order is preparing", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم البدء بتحضير الطبية", bodyEn:"the order is preparing", userId: client.id ,orderId: order.id});
         } else if(status === "onTheWay"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم الانتهاء من تحضير الطلبية وهي في طريقها اليك", bodyEn:"the order is on the way to you", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم الانتهاء من تحضير الطلبية وهي في طريقها اليك", bodyEn:"the order is on the way to you", userId: client.id ,orderId: order.id});
         } else if(status === "delivered"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم توصيل الطلبية", bodyEn:"the order is delivered", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم توصيل الطلبية", bodyEn:"the order is delivered", userId: client.id ,orderId: order.id});
         } else if(status === "canceled"){
-            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyEn: "تم الغاء الطلبية", bodyEn:"the order is canceled", userId: client.id ,orderId: order.id});
+            await sendNotification({token: client.fbToken, titleAr: "إشعار طلبية",titleEn:"order", bodyAr: "تم الغاء الطلبية", bodyEn:"the order is canceled", userId: client.id ,orderId: order.id});
         }
         res.send(new BaseResponse({ data: order, success: true, msg: "updated successfully", lang }));
     } catch (error) {
