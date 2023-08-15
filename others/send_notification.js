@@ -18,7 +18,7 @@ const sendNotification = async ({ token, titleAr, bodyAr, titleEn, bodyEn, userI
             await admin.messaging().sendToDevice(token, message_notification, notification_options);
         }
     } catch(error){
-        console.log(e);
+        console.log(error);
     }
 }
 
