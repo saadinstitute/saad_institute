@@ -6,7 +6,7 @@ const cloudinary = require('../others/cloudinary.config');
 const config = require('../config.js');
 const store = require('store');
 const formidable = require('formidable');
-const { validateSuperAdmin, validateUser  } = require("../others/validator");
+const { validateSuperAdmin, validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
 
 
@@ -21,30 +21,37 @@ const transporter = nodemailer.createTransport({
 const users = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const msg = await validateSuperAdmin(req);
-        if (msg) 
+        const msg = await validateAdmin(req);
+        if (msg)
             return res.send(new BaseResponse({ success: false, status: 403, msg, lang }));
-        const { pageSize = 10, page = 0, search} = req.query;
+        const { pageSize = 10, page = 0, search } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        if(search);
-        query = {[Op.or]:[
-            {
-                username:{
-                    [Op.like]: `%${search}%`
+        if (search);
+        query = {
+            [Op.or]: [
+                {
+                    firstName: {
+                        [Op.like]: `%${search}%`
+                    }
+                },
+                {
+                    lastName: {
+                        [Op.like]: `%${search}%`
+                    }
+                },
+                {
+                    mobile: {
+                        [Op.like]: `%${search}%`
+                    }
                 }
-            },
-            {
-                email:{
-                    [Op.like]: `%${search}%`
-                }
-            }
-        ]};
-        const data = await User.findAndCountAll({where: query ,offset: start * size, limit: size,attributes: { exclude: ['password'] }});
+            ]
+        };
+        const data = await User.findAndCountAll({ where: query, offset: start * size, limit: size, attributes: { exclude: ['password'] } });
         const users = data.rows;
         const usersCount = data.count;
-        res.send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: {total: usersCount, page: start, pageSize: size} }));
+        res.send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: { total: usersCount, page: start, pageSize: size } }));
     } catch (err) {
         console.log(err);
         res.status(400).send(new BaseResponse({ msg: err, success: false, status: 400, lang }));
@@ -86,19 +93,12 @@ const addUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const data = await getFormFromReq(req);
-        const msg = await validateSuperAdmin(req);
-        if (msg) {
-            return res.send(new BaseResponse({ success: false, msg: msg, status: 401, lang }));
-        }
+        await validateAdmin(req);
         let body = data;
-        if (body.type === "user") body.role = "user";
-        else if (body.type === "owner") body.role = "admin";
-        else if (body.type === "superAdmin") body.role = "superAdmin";
-        else return res.send(new BaseResponse({ success: false, msg: "type is required (user || owner)", lang }));
-        if (body.image) {
-            const resCloudinary = await cloudinary.uploader.upload(body.image.filepath);
-            body.imageUrl = resCloudinary.url;
-        }
+        // if (body.image) {
+        //     const resCloudinary = await cloudinary.uploader.upload(body.image.filepath);
+        //     body.imageUrl = resCloudinary.url;
+        // }
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: user, success: true, msg: "success", lang }));
     } catch (err) {
@@ -110,29 +110,15 @@ const addUser = async (req, res) => {
 const login = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { email, password, app, fbToken } = req.body;
-        if (!app) {
-            return res.send(new BaseResponse({ msg: "app field is required", status: 400, success: false, lang }));
-        }
-        const appNum = Number(app);
-        const user = await User.findOne({ where: { email } });
+        const { mobile, password, fbToken } = req.body;
+        const user = await User.findOne({ where: { mobile } });
         if (!user) {
             return res.send(new BaseResponse({ msg: "user not found", status: 404, success: false, lang }));
         }
         if (user.password != password) {
             return res.send(new BaseResponse({ msg: "password is not correct", status: 403, success: false, lang }));
         }
-        if (appNum === 1 && user.role !== "user") {
-            return res.send(new BaseResponse({ msg: "this account is not a user account", status: 403, success: false, lang }));
-        }
-        if (appNum === 2 && user.role !== "admin") {
-            return res.send(new BaseResponse({ msg: "this account is not an admin", status: 403, success: false, lang }));
-        }
-        if (appNum === 3 && user.role !== "superAdmin") {
-            return res.send(new BaseResponse({ msg: "this account is not a superAdmin", status: 403, success: false, lang }));
-        }
-        if (appNum < 1 || appNum > 3) return res.send(new BaseResponse({ msg: "app value is not correct", status: 400, success: false, lang }));
-        if(fbToken){
+        if (fbToken) {
             user.fbToken = fbToken;
             await user.save();
         }
@@ -245,21 +231,33 @@ const updateUser = async (req, res) => {
         const client = await validateUser(req);
         const data = await getFormFromReq(req);
         if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
-        const user = await User.findOne({ where: { id: data.id }, attributes: {exclude:["password"]} });
+        const user = await User.findOne({ where: { id: data.id }, attributes: { exclude: ["password"] } });
         if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
-        if(client.id !== user.id && client.role !== "superAdmin"){
+        if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
             return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
         }
-        if (data.image) {
-            const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
-            user.imageUrl = resCloudinary.url ?? user.imageUrl;
-        }
-        const { fullName, dateOfBirth, mobile, gender, address } = data;
-        if(fullName && fullName !== "") user.fullName = fullName;
-        if(dateOfBirth && dateOfBirth !== "") user.dateOfBirth = dateOfBirth;
-        if(mobile && mobile !== "") user.mobile = mobile;
-        if(gender && gender !== "") user.gender = gender;
-        if(address && address !== "") user.address = address;
+        // if (data.image) {
+        //     const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
+        //     user.imageUrl = resCloudinary.url ?? user.imageUrl;
+        // }
+        const { firstName, lastName, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
+        if (firstName && firstName !== "") user.firstName = firstName;
+        if (lastName && lastName !== "") user.lastName = lastName;
+        if (fatherName && fatherName !== "") user.fatherName = fatherName;
+        if (dateOfBirth && dateOfBirth !== "") user.dateOfBirth = dateOfBirth;
+        if (placeOfBirth && placeOfBirth !== "") user.placeOfBirth = placeOfBirth;
+        if (mobile && mobile !== "") user.mobile = mobile;
+        if (landlinePhone && landlinePhone !== "") user.landlinePhone = landlinePhone;
+        if (gender && gender !== "") user.gender = gender;
+        if (currentAddress && currentAddress !== "") user.currentAddress = currentAddress;
+        if (permanintAddress && permanintAddress !== "") user.permanintAddress = permanintAddress;
+        if (isMarried && isMarried !== "") user.isMarried = isMarried;
+        if (nationalId && nationalId !== "") user.nationalId = nationalId;
+        if (brothers && brothers !== "") user.brothers = brothers;
+        if (sisters && sisters !== "") user.sisters = sisters;
+        if (currentWork && currentWork !== "") user.currentWork = currentWork;
+        if (role && role !== "") user.role = role;
+        if (isConfirmed && isConfirmed !== "") user.isConfirmed = isConfirmed;
         await user.save();
         res.send(new BaseResponse({ data: user, success: true, msg: "updated successfully", lang }));
     } catch (error) {
@@ -274,13 +272,13 @@ const deleteUser = async (req, res) => {
         const msg = await validateSuperAdmin(req);
         const reqestedBy = await validateUser(req);
         if (msg) return res.send(new BaseResponse({ success: false, status: 403, msg: msg, lang }));
-        if(!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
+        if (!req.params.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id param is required", lang }));
         const id = req.params.id;
-        const user = await User.findOne({ where:{ id }});
-        if(!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
-        if(reqestedBy.id === user.id) return res.send(new BaseResponse({ success: false, status: 404, msg: "you can't delete your account", lang }));
+        const user = await User.findOne({ where: { id } });
+        if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
+        if (reqestedBy.id === user.id) return res.send(new BaseResponse({ success: false, status: 404, msg: "you can't delete your account", lang }));
         const isSuccess = !(!(await user.destroy()));
-        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess?"deleted successfully":"there is someting wrong, please try again later", lang }));
+        res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess ? "deleted successfully" : "there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
