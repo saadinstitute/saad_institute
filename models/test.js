@@ -11,14 +11,6 @@ const Test = dbConnection.define('test', {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
     },
-    date: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    type: {
-        type: DataTypes.ENUM("preface", "reading", "saving"),
-        allowNull: false
-    },
     studentId: {
         type: Sequelize.UUID,
         allowNull: false,

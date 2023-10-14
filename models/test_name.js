@@ -11,7 +11,7 @@ const TestName = dbConnection.define('test_name', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: false
     },
     type: {
         type: DataTypes.STRING,

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const config =  require('./config.js');
+const config = require('./config.js');
 const dbConnection = require('./database/db');
 const middleware = require('./others/middleware');
 const userRouter = require('./routes/user.route');
@@ -21,7 +21,7 @@ const TestMark = require('./models/test_mark.js');
 const port = config.MYSQL_ADDON_PORT ?? 8080;
 const app = express();
 
-app.use(cors({origin: "*"}));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 User.hasMany(Test);
@@ -36,10 +36,10 @@ Test.belongsTo(User);
 Test.belongsTo(User);
 Test.belongsTo(Student);
 Test.belongsTo(TestName);
-Test.belongsTo(TestMark);
+Test.hasMany(TestMark, {as: "marks"});
 
 Student.belongsTo(Klass);
-Student.belongsTo(Test);
+Student.hasMany(Test);
 
 TestMark.belongsTo(Test);
 
@@ -57,6 +57,6 @@ app.use(testRouter);
 app.use(marksRouter);
 
 app.listen("8080", "0.0.0.0", async () => {
-  await dbConnection.sync({alter: false, force: false});
-    console.log(`Example app listening on port ${port}`);
+  await dbConnection.sync({ alter: false, force: false });
+  console.log(`Example app listening on port ${port}`);
 })

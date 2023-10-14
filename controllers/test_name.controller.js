@@ -8,7 +8,7 @@ const addTestName = async (req, res) => {
     try {
         const { name, type } = req.body;
         await validateAdmin(req);
-        const test = await TestName.create({ name, type, isPrimary });
+        const test = await TestName.create({ name, type });
         res.send(new BaseResponse({ data: test, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -19,9 +19,9 @@ const addTestName = async (req, res) => {
 const getTestNames = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const {search} = req.query;
+        const {search, type} = req.query;
         let query = {};
-        if(search);
+        if(search)
         query = {[Op.or]:[
             {
                 name:{
@@ -29,6 +29,9 @@ const getTestNames = async (req, res) => {
                 }
             }
         ]};
+        if(type){
+            query.type = type;
+        }
         const data = await TestName.findAndCountAll({ where: query });
         const tests = data.rows;
         // const testsCharitiesCount = data.count;

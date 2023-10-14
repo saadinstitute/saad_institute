@@ -1,10 +1,5 @@
 const BaseResponse = require('../models/base_response');
-const Meal = require('../models/meal');
-const Resturant = require('../models/resturant');
-const Category = require('../models/category');
-const MealUserFav = require('../models/meal_user_fav');
 const cloudinary = require('../others/cloudinary.config');
-const add_popularity = require('../others/add_popularity');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
@@ -20,7 +15,7 @@ const addStudent = async (req, res) => {
         let imageUrl;
         if (image) {
             const resCloudinary = await cloudinary.uploader.upload(image.filepath);
-            imageUrl = resCloudinary.url;معه
+            imageUrl = resCloudinary.url; معه
         }
         const student = await Student.create({ imageUrl, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId });
         res.send(new BaseResponse({ data: student, success: true, msg: "success", lang }));
@@ -54,19 +49,18 @@ const getStudents = async (req, res) => {
             ];
 
         }
-        if (klassId){
-             query.klassId = klassId;
-             include.add({
-                model: Klass,
-                as: "klass"
-            });
-            }
+        if (klassId) {
+            query.klassId = klassId;
+        }
         const data = await Student.findAndCountAll({
             where: query,
             offset: start * size,
             limit: size,
-            include: include,
-            attributes: klassId?{exclude: ["klassId"]}:null,
+            include: [({
+                model: Klass,
+                as: "klass"
+            })],
+            attributes: { exclude: ["klassId"] },
         });
 
         const students = data.rows;
@@ -83,8 +77,8 @@ const updateStudent = async (req, res) => {
     try {
         const data = await getFormFromReq(req);
         const { id, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation,
-             motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, imageUrl, fatherPhone, whatsappNumber,
-              phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
+            motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, imageUrl, fatherPhone, whatsappNumber,
+            phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
         await validateAdmin(req);
         const studnet = await Student.findByPk(id);
         if (!studnet) {

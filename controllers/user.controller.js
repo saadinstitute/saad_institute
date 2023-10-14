@@ -21,33 +21,37 @@ const transporter = nodemailer.createTransport({
 const users = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const msg = await validateAdmin(req);
-        if (msg)
-            return res.send(new BaseResponse({ success: false, status: 403, msg, lang }));
-        const { pageSize = 10, page = 0, search } = req.query;
+        const { pageSize = 10, page = 0, search, role } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        if (search);
-        query = {
-            [Op.or]: [
-                {
-                    firstName: {
-                        [Op.like]: `%${search}%`
+        const user = await validateUser(req);
+        if (role && (user.role === "admin" || user.role === "superAdmin" || (role !== "admin" && role !== "superAdmin"))) {
+            query.role = role;
+        } else if(user.role !== "admin" && user.role !== "superAdmin"){
+            query.role = ["tester", "teacher"];
+        }
+        if (search) {
+            query = {
+                [Op.or]: [
+                    {
+                        firstName: {
+                            [Op.like]: `%${search}%`
+                        }
+                    },
+                    {
+                        lastName: {
+                            [Op.like]: `%${search}%`
+                        }
+                    },
+                    {
+                        mobile: {
+                            [Op.like]: `%${search}%`
+                        }
                     }
-                },
-                {
-                    lastName: {
-                        [Op.like]: `%${search}%`
-                    }
-                },
-                {
-                    mobile: {
-                        [Op.like]: `%${search}%`
-                    }
-                }
-            ]
-        };
+                ]
+            };
+        }
         const data = await User.findAndCountAll({ where: query, offset: start * size, limit: size, attributes: { exclude: ['password'] } });
         const users = data.rows;
         const usersCount = data.count;
@@ -93,11 +97,7 @@ const addUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const body = req.body;
-        await validateAdmin(req);
-        // if (body.image) {
-        //     const resCloudinary = await cloudinary.uploader.upload(body.image.filepath);
-        //     body.imageUrl = resCloudinary.url;
-        // }
+        // await validateAdmin(req);
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: user, success: true, msg: "success", lang }));
     } catch (err) {
@@ -227,37 +227,40 @@ const forgetPassword = async (req, res) => {
 const updateUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
+        console.log("1");
         const client = await validateUser(req);
-        const data = await getFormFromReq(req);
+        console.log("2");
+        const data = req.body;
+        console.log("3");
         if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
-        const user = await User.findOne({ where: { id: data.id }, attributes: { exclude: ["password"] } });
+        const user = await User.findByPk(data.id);
+        console.log("4");
         if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
         if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
             return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
         }
-        // if (data.image) {
-        //     const resCloudinary = await cloudinary.uploader.upload(data.image.filepath);
-        //     user.imageUrl = resCloudinary.url ?? user.imageUrl;
-        // }
+        console.log("5");
         const { firstName, lastName, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
-        if (firstName && firstName !== "") user.firstName = firstName;
-        if (lastName && lastName !== "") user.lastName = lastName;
-        if (fatherName && fatherName !== "") user.fatherName = fatherName;
-        if (dateOfBirth && dateOfBirth !== "") user.dateOfBirth = dateOfBirth;
-        if (placeOfBirth && placeOfBirth !== "") user.placeOfBirth = placeOfBirth;
-        if (mobile && mobile !== "") user.mobile = mobile;
-        if (landlinePhone && landlinePhone !== "") user.landlinePhone = landlinePhone;
-        if (gender && gender !== "") user.gender = gender;
-        if (currentAddress && currentAddress !== "") user.currentAddress = currentAddress;
-        if (permanintAddress && permanintAddress !== "") user.permanintAddress = permanintAddress;
-        if (isMarried && isMarried !== "") user.isMarried = isMarried;
-        if (nationalId && nationalId !== "") user.nationalId = nationalId;
-        if (brothers && brothers !== "") user.brothers = brothers;
-        if (sisters && sisters !== "") user.sisters = sisters;
-        if (currentWork && currentWork !== "") user.currentWork = currentWork;
-        if (role && role !== "") user.role = role;
-        if (isConfirmed && isConfirmed !== "") user.isConfirmed = isConfirmed;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.fatherName = fatherName;
+        user.dateOfBirth = dateOfBirth;
+        user.placeOfBirth = placeOfBirth;
+        user.mobile = mobile;
+        user.landlinePhone = landlinePhone;
+        user.gender = gender;
+        user.currentAddress = currentAddress;
+        user.permanintAddress = permanintAddress;
+        user.isMarried = Boolean(isMarried);
+        user.nationalId = nationalId;
+        user.brothers = Number(brothers);
+        user.sisters = Number(sisters);
+        user.currentWork = currentWork;
+        user.role = role;
+        user.isConfirmed = Boolean(isConfirmed);
+        console.log("6");
         await user.save();
+        console.log("7");
         res.send(new BaseResponse({ data: user, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);

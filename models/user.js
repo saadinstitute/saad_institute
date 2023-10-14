@@ -14,13 +14,11 @@ const User = dbConnection.define('user', {
     },
     lastName: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: 'username'
+        allowNull: false
     },
     fatherName: {
         type: DataTypes.STRING,
-        allowNull: true,
-        unique: 'username'
+        allowNull: true
     },
     password: {
         type: DataTypes.STRING,
@@ -71,7 +69,7 @@ const User = dbConnection.define('user', {
         allowNull: true
     },
     currentWork: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     gender: {
