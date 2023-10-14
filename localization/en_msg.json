@@ -27,7 +27,7 @@
     "you can't edit this resturant":"You can't edit this resturant",
     "you can't delete this resturant":"You can't delete this resturant",
     "there is no resturant with the id":"There is no resturant with the id",
-    "there is no charity with the id":"There is no charity with the id",
+    "there is no mark with the id":"There is no mark with the id",
     "userId field is required":"\"userId\" field is required",
     "mealId is required":"\"mealId\" field is required",
     "you can't delete your account":"you can't delete your account",
@@ -50,5 +50,6 @@
     "you are not subscribed to this course":"You are not subscribed to this course",
     "unsubscribed successfully":"unsubscribed successfully",
     "there is no delivery company with the id":"There is no delivery company with the id",
-    "should be at least one meal":"Should be at least one meal"
+    "should be at least one meal":"Should be at least one meal",
+    "there is no test with this id":"There is no test with this id"
 }

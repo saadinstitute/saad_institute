@@ -27,7 +27,7 @@
     "you can't edit this resturant":"لا يمكنك التعديل على هذا المطعم",
     "you can't delete this resturant":"لا يمكنك حذف هذا المطعم",
     "there is no resturant with the id":"المطعم غير موجود",
-    "there is no charity with the id":"الجمعية غير موجودة",
+    "there is no mark with the id":"العلامة غير موجودة",
     "userId field is required":"\"userId\" مطلوب",
     "mealId is required":"\"mealId\" مطلوب",
     "you can't delete your account":"لا يمكنك حذف حسابك بنفسك",
@@ -50,5 +50,6 @@
     "you are not subscribed to this course":"انت غير مشترك بهذا الكورس",
     "unsubscribed successfully":"تم الغاء الاشتراك بنجاح",
     "there is no delivery company with the id":"شركة التوصيل غير موجودة",
-    "should be at least one meal":"يجب ان يحوي الطلب على وجبة واحدة فقط"
+    "should be at least one meal":"يجب ان يحوي الطلب على وجبة واحدة فقط",
+    "there is no test with this id":"الاختبار غير موجود"
 }
