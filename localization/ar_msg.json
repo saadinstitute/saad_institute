@@ -38,7 +38,7 @@
     "email must be unique":"الايميل مستخدم مسبقاً",
     "category not found":"التصنيف غير موجود",
     "resturant not found":"المطعم غير موجود",
-    "meal not found":"الوجبة غير موجودة",
+    "student not found":"الطالب غير موجودة",
     "you don't have permission to add a meal to this restuarnt":"لايوجد لديك صلاحية بإضافة وجبة لهذا المطعم",
     "you don't have permission to edit this meal":"لايوجد لديك صلاحية التعديل على هذه الوجبة",
     "you can't delete this meal":"لا يمكنك حذف هذه الوجبة",

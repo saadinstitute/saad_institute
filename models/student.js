@@ -104,10 +104,6 @@ const Student = dbConnection.define('student', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    currentAddress: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     klassId: {
         type: Sequelize.UUID,
         allowNull: true,
