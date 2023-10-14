@@ -15,14 +15,14 @@ const addStudent = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const data = await getFormFromReq(req);
-        const { firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, imageUrl, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
+        const { firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, image, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
         await validateAdmin(req);
-        let url;
-        if (data.imageUrl) {
-            const resCloudinary = await cloudinary.uploader.upload(data.imageUrl.filepath);
-            url = resCloudinary.url;
+        let imageUrl;
+        if (image) {
+            const resCloudinary = await cloudinary.uploader.upload(image.filepath);
+            imageUrl = resCloudinary.url;معه
         }
-        const student = await Student.create({ imageUrl: url, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId });
+        const student = await Student.create({ imageUrl, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId });
         res.send(new BaseResponse({ data: student, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -103,8 +103,8 @@ const updateStudent = async (req, res) => {
         studnet.fatherEducation = fatherEducation;
         studnet.motherName = motherName;
         studnet.motherEducation = motherEducation;
-        studnet.sisters = sisters;
-        studnet.brothers = brothers;
+        studnet.sisters = Number(sisters);
+        studnet.brothers = Number(brothers);
         studnet.previousInstitute = previousInstitute;
         studnet.previousAchievement = previousAchievement;
         studnet.fatherPhone = fatherPhone;

@@ -11,7 +11,7 @@ const addMark = async (req, res) => {
         await validateUser(req);
         const test = await Test.findByPk(testId);
         if (!test) return res.send(new BaseResponse({ status:404 , msg: "there is no test with this id", lang }));
-        const testMark = await TestMark.create({ mark, testId, isPrimary });
+        const testMark = await TestMark.create({ mark, testId, isPrimary: Boolean(isPrimary) });
         res.send(new BaseResponse({ data: test, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -43,7 +43,7 @@ const updateTestMark = async (req, res) => {
         const testMark = await TestName.findByPk(data.id);
         const { mark, isPrimary } = data;
         testMark.mark = mark;
-        testMark.isPrimary = isPrimary;
+        testMark.isPrimary = Boolean(isPrimary);
         await testMark.save();
         res.send(new BaseResponse({ data: test, success: true, msg: "updated successfully", lang }));
     } catch (error) {
