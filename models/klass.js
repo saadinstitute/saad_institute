@@ -1,38 +1,40 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
-const Meal = require("./meal");
+const DayTime = require("./day_time");
 const User = require("./user");
-const MealUserFav = dbConnection.define('meal_user_fav', {
+
+const Klass = dbConnection.define('klass', {
     id: {
+        primaryKey: true,
         type: DataTypes.UUID,
         allowNull: false,
-        primaryKey: true,
         defaultValue: Sequelize.UUIDV4
     },
-    mealId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: Meal,
-            key: "id"
-        }
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     userId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: User,
             key: "id"
         }
     },
-    isFav: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
-    },
+    dayTimeId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: DayTime,
+            key: "id"
+        }
+    }
 },{
     timestamps: true,
     freezeTableName: true,
     paranoid: true
 });
 
-module.exports = MealUserFav;
+
+module.exports = Klass;

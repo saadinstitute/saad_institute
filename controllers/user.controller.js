@@ -92,9 +92,8 @@ const register = async (req, res) => {
 const addUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const data = await getFormFromReq(req);
+        const body = req.body;
         await validateAdmin(req);
-        let body = data;
         // if (body.image) {
         //     const resCloudinary = await cloudinary.uploader.upload(body.image.filepath);
         //     body.imageUrl = resCloudinary.url;

@@ -2,7 +2,7 @@ const arMsg = require("../localization/ar_msg.json");
 const enMsg = require("../localization/en_msg.json");
 
 class baseResponse {
-  constructor({ data = {}, success, msg = "", lang = "en", status, pagination }) {
+  constructor({ data = {}, success, msg = "", lang = "ar", status, pagination }) {
     this.data = data;
     this.success = success;
     if (!success) msg = handleErrorMessgae(msg);

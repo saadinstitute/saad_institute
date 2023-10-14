@@ -11,10 +11,14 @@ router.use(function (req = request, res = response, next) {
     // if(!req.headers['authorization'].startsWith("Bearer ")){
     //     return res.status(401).send(new BaseResponse({success: false, msg: "the authorization must be Bearer", status: 400, lang}));
     // }
-    let token = req.headers['authorization'].substring(7, req.headers['authorization'].length);
-    // token = token.split(" ")[1];
+    const bearer = req.headers['authorization'];
+    let token;
+    if (bearer) {
+        token = bearer.substring(7, bearer.length);
+    }
+    console.log(token);
     var lang = req.headers['lang'];
-    if (token) {
+    if (bearer) {
         jwt.verify(token, process.env.TOKEN_KEY,
             async function (err, decoded) {
                 if (err) {
@@ -23,15 +27,15 @@ router.use(function (req = request, res = response, next) {
                         expiredAt: err.expiredAt
                     };
                     console.log(errordata);
-                    return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401,lang}));
+                    return res.status(401).send(new BaseResponse({ success: false, msg: "Unauthorized", status: 401, lang }));
                 }
                 req.decoded = decoded;
-                const user = await User.findOne({where : { id: decoded.user_id }});
-                if(!user) return res.status(401).send(new BaseResponse({success: false, msg: "Unauthorized",status: 401,lang}));
+                const user = await User.findOne({ where: { id: decoded.user_id } });
+                if (!user) return res.status(401).send(new BaseResponse({ success: false, msg: "Unauthorized", status: 401, lang }));
                 next();
             });
     } else {
-        return res.status(403).send(new BaseResponse({success: false, msg: "There is no token provided",status: 403, lang}));
+        return res.status(403).send(new BaseResponse({ success: false, msg: "There is no token provided", status: 403, lang }));
     }
 });
 

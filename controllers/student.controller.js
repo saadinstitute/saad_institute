@@ -9,32 +9,7 @@ const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
 
-const editFavMeal = async (req, res) => {
-    const lang = req.headers["lang"];
-    try {
-        const { mealId, isFav } = req.body;
-        const user = await validateUser(req);
-        if (!mealId) {
-            return res.send(new BaseResponse({ success: false, msg: `mealId is required`, status: 400, lang }));
-        }
-        var old_data = await MealUserFav.findOne({ where: { mealId: mealId, userId: user.id } });
-        if (!old_data) {
-            const thefav = await Meal.findByPk(mealId)
-            console.log(thefav.resturantId)
-            add_popularity(thefav.resturantId, Number(isFav), user.id)
-        }
-
-
-        await MealUserFav.upsert({ userId: user.id, mealId, isFav });
-
-        res.send(new BaseResponse({ success: true, msg: "success", lang }));
-    } catch (error) {
-        console.log(error);
-        res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
-    }
-};
-
-const addMeal = async (req, res) => {
+const addStudent = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const data = await getFormFromReq(req);

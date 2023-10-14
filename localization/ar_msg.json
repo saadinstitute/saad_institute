@@ -23,7 +23,7 @@
     "there is someting wrong, please try again later":"حصل خطأ غير متوقع، يرجى المحاولة لاحقاً",
     "the verify code have been send to the email":"تم إرسال الكود الى الايميل",
     "id param is required":"ال id مطلوب",
-    "there is no category with the id":"لايوجد صنف بهذا ال id",
+    "there is no daytime with the id":"لايوجد موعد بهذا ال id",
     "you can't edit this resturant":"لا يمكنك التعديل على هذا المطعم",
     "you can't delete this resturant":"لا يمكنك حذف هذا المطعم",
     "there is no resturant with the id":"المطعم غير موجود",
