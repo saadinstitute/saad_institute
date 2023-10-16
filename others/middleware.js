@@ -6,7 +6,7 @@ const User = require('../models/user');
 
 router.use(function (req = request, res = response, next) {
     const url = req.url.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-    if (['/auth', '/app', '/upload'].some((word) => url.startsWith(word)))
+    if (['/auth', '/app', '/upload', '/user'].some((word) => url.startsWith(word)))
         return next();
     // if(!req.headers['authorization'].startsWith("Bearer ")){
     //     return res.status(401).send(new BaseResponse({success: false, msg: "the authorization must be Bearer", status: 400, lang}));

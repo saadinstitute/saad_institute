@@ -22,11 +22,11 @@ const Lesson = dbConnection.define('lesson', {
         allowNull: false,
     },
     quantity: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
     mark: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.DOUBLE,
         allowNull: true,
     },
     note: {

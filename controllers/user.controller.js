@@ -97,7 +97,7 @@ const addUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const body = req.body;
-        // await validateAdmin(req);
+        await validateAdmin(req);
         const user = await User.create(body);
         res.status(201).send(new BaseResponse({ data: user, success: true, msg: "success", lang }));
     } catch (err) {
