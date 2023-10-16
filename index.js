@@ -70,7 +70,7 @@ app.use(testRouter);
 app.use(marksRouter);
 app.use(attendanceRouter);
 
-app.listen("8080", "0.0.0.0", async () => {
+app.listen(port, "0.0.0.0", async () => {
   await dbConnection.sync({ alter: false, force: false });
   console.log(`Example app listening on port ${port}`);
 })
