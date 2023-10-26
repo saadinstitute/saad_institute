@@ -21,6 +21,10 @@ const Student = dbConnection.define('student', {
         type: DataTypes.DATE,
         allowNull: true
     },
+    joindedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     placeOfBirth: {
         type: DataTypes.STRING,
         allowNull: true

@@ -32,6 +32,10 @@ const User = dbConnection.define('user', {
         type: DataTypes.DATE,
         allowNull: true
     },
+    joinedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     placeOfBirth: {
         type: DataTypes.STRING,
         allowNull: true

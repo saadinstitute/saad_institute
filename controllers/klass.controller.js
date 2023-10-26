@@ -1,4 +1,5 @@
 const BaseResponse = require('../models/base_response');
+const DayTime = require('../models/day_time');
 const Klass = require('../models/klass');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
@@ -38,7 +39,16 @@ const getKlasses = async (req, res) => {
         }
         if (userId)
             query.userId = userId;
-        const data = await Klass.findAndCountAll({ where: query, offset: start * size, limit: size });
+        const data = await Klass.findAndCountAll({
+            where: query,
+            offset: start * size,
+            limit: size,
+            include: [
+                DayTime,
+                [Sequelize.fn("COUNT", Sequelize.col("student.id")), "studentsCount"]
+            ],
+            attributes: { exclude: ["dayTimeId"] }
+        });
         let klasses = data.rows;
         let klassesCount = data.count;
         res.send(new BaseResponse({ data: klasses, success: true, msg: "success", lang, pagination: { total: klassesCount, page: start, pageSize: size } }));

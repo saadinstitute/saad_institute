@@ -32,11 +32,11 @@ const DayTime = dbConnection.define('day_time', {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    Thursday: {
+    thursday: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    Friday: {
+    friday: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },

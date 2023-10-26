@@ -227,24 +227,20 @@ const forgetPassword = async (req, res) => {
 const updateUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        console.log("1");
         const client = await validateUser(req);
-        console.log("2");
         const data = req.body;
-        console.log("3");
         if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
         const user = await User.findByPk(data.id);
-        console.log("4");
         if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
         if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
             return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
         }
-        console.log("5");
-        const { firstName, lastName, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
+        const { firstName, lastName, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, joinedAt, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
         user.firstName = firstName;
         user.lastName = lastName;
         user.fatherName = fatherName;
         user.dateOfBirth = dateOfBirth;
+        user.joinedAt = joinedAt;
         user.placeOfBirth = placeOfBirth;
         user.mobile = mobile;
         user.landlinePhone = landlinePhone;
@@ -258,9 +254,7 @@ const updateUser = async (req, res) => {
         user.currentWork = currentWork;
         user.role = role;
         user.isConfirmed = Boolean(isConfirmed);
-        console.log("6");
         await user.save();
-        console.log("7");
         res.send(new BaseResponse({ data: user, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);

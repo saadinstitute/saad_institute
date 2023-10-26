@@ -35,6 +35,7 @@ User.hasMany(Klass);
 
 Klass.belongsTo(User);
 Klass.belongsTo(DayTime);
+// Klass.hasOne(DayTime);
 
 Attendance.belongsTo(Student);
 
@@ -70,7 +71,7 @@ app.use(testRouter);
 app.use(marksRouter);
 app.use(attendanceRouter);
 
-app.listen(port, "0.0.0.0", async () => {
+app.listen("8080", "localhost", async () => {
   await dbConnection.sync({ alter: false, force: false });
   console.log(`Example app listening on port ${port}`);
 })
