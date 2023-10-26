@@ -1,8 +1,10 @@
 const BaseResponse = require('../models/base_response');
 const DayTime = require('../models/day_time');
 const Klass = require('../models/klass');
+const Student = require('../models/student');
 const { validateAdmin, validateUser } = require("../others/validator");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
+const db = require("../database/db");
 
 const addKlass = async (req, res) => {
     const lang = req.headers["lang"];
@@ -39,18 +41,30 @@ const getKlasses = async (req, res) => {
         }
         if (userId)
             query.userId = userId;
+        // await db.query("SET GLOBAL sql_mode = ''");
         const data = await Klass.findAndCountAll({
             where: query,
             offset: start * size,
             limit: size,
             include: [
                 DayTime,
-                [Sequelize.fn("COUNT", Sequelize.col("student.id")), "studentsCount"]
+                {
+                    model: Student,
+                    attributes: []
+                }
             ],
-            attributes: { exclude: ["dayTimeId"] }
+            attributes: {
+                include: [
+                    [Sequelize.fn("COUNT", Sequelize.col("students.id")), "studentsCount"]
+                ],
+                exclude: ["dayTimeId"]
+            },
+            group: ['id'],
+            subQuery:false
         });
         let klasses = data.rows;
-        let klassesCount = data.count;
+        let klassesCount = data.count[0].count;
+        // console.log(data.count);
         res.send(new BaseResponse({ data: klasses, success: true, msg: "success", lang, pagination: { total: klassesCount, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);

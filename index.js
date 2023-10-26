@@ -35,7 +35,7 @@ User.hasMany(Klass);
 
 Klass.belongsTo(User);
 Klass.belongsTo(DayTime);
-// Klass.hasOne(DayTime);
+Klass.hasMany(Student);
 
 Attendance.belongsTo(Student);
 
