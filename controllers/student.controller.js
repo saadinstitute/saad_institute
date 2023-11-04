@@ -56,10 +56,14 @@ const getStudents = async (req, res) => {
             where: query,
             offset: start * size,
             limit: size,
-            include: [({
+            include: [{
                 model: Klass,
-                as: "klass"
-            })],
+                as: "klass",
+                required: user.role === "teacher",
+                where: {
+                    ...((user.role === "teacher") && {"userId": user.id})
+                }
+            }],
             attributes: { exclude: ["klassId"] },
         });
 
@@ -77,7 +81,7 @@ const updateStudent = async (req, res) => {
     try {
         const data = await getFormFromReq(req);
         const { id, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation,
-            motherName, motherEducation, sisters, brothers, previousInstitute, joinedAt,previousAchievement, imageUrl, fatherPhone, whatsappNumber,
+            motherName, motherEducation, sisters, brothers, previousInstitute, joinedAt, previousAchievement, imageUrl, fatherPhone, whatsappNumber,
             phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
         await validateAdmin(req);
         const studnet = await Student.findByPk(id);
