@@ -11,6 +11,7 @@ const testNameRouter = require('./routes/test_name.route.js');
 const testRouter = require('./routes/test.route.js');
 const studentRouter = require('./routes/student.route.js');
 const attendanceRouter = require('./routes/attendance.route.js');
+const lessoneRouter = require('./routes/lesson.route.js');
 const DayTime = require('./models/day_time.js');
 const User = require('./models/user.js');
 const TestName = require('./models/test_name.js');
@@ -70,6 +71,8 @@ app.use(studentRouter);
 app.use(testRouter);
 app.use(marksRouter);
 app.use(attendanceRouter);
+app.use(attendanceRouter);
+app.use(lessoneRouter);
 
 app.listen("8080", "localhost", async () => {
   await dbConnection.sync({ alter: false, force: false });
