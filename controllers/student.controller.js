@@ -2,9 +2,10 @@ const BaseResponse = require('../models/base_response');
 const cloudinary = require('../others/cloudinary.config');
 const formidable = require('formidable');
 const { validateAdmin, validateUser } = require("../others/validator");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const Student = require('../models/student');
 const Klass = require('../models/klass');
+const Absence = require('../models/absence');
 
 const addStudent = async (req, res) => {
     const lang = req.headers["lang"];
@@ -61,8 +62,16 @@ const getStudents = async (req, res) => {
                 as: "klass",
                 required: user.role === "teacher",
                 where: {
-                    ...((user.role === "teacher") && {"userId": user.id})
+                    ...((user.role === "teacher") && { "userId": user.id })
                 }
+            }, {
+                model: Absence,
+                required: false,
+                separate: true,
+                order: [
+                    ["beginAt",  "DESC"]
+                ],
+                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
             }],
             attributes: { exclude: ["klassId"] },
         });

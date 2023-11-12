@@ -23,11 +23,12 @@ const Absence = dbConnection.define('absence', {
     },
     reason: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
+        defaultValue: ""
     },
     endAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     
 },{
