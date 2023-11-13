@@ -41,7 +41,7 @@ const getCategories = async (req, res) => {
                 }
             ];
         }
-        
+
         const data = await Category.findAndCountAll({
             where: query,
             offset: start * size,
@@ -61,7 +61,7 @@ const getCategories = async (req, res) => {
             subQuery: false
         });
         let rows = data.rows;
-        let count = data.count[0].count;
+        let count = rows.length === 0 ? 0 : data.count[0].count;
         res.send(new BaseResponse({ data: rows, success: true, msg: "success", lang, pagination: { total: count, page: start, pageSize: size } }));
     } catch (error) {
         console.log(error);

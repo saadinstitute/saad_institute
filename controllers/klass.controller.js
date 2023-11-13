@@ -60,10 +60,10 @@ const getKlasses = async (req, res) => {
                 exclude: ["dayTimeId"]
             },
             group: ['id'],
-            subQuery:false
+            subQuery: false
         });
         let klasses = data.rows;
-        let klassesCount = data.count[0].count;
+        let klassesCount = klasses.length === 0 ? 0 : data.count[0].count;
         // console.log(data.count);
         res.send(new BaseResponse({ data: klasses, success: true, msg: "success", lang, pagination: { total: klassesCount, page: start, pageSize: size } }));
     } catch (error) {
