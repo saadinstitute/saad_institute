@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const dbConnection = require("../database/db");
 const Klass = require("./klass");
+const Category = require("./category");
 
 const Student = dbConnection.define('student', {
     id: {
@@ -115,7 +116,16 @@ const Student = dbConnection.define('student', {
             model: Klass,
             key: 'id'
         }
-    }
+    },
+    categoryId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+            model: Category,
+            key: 'id'
+        }
+    },
+
 },{
     timestamps: true,
     freezeTableName: true,

@@ -13,6 +13,8 @@ const studentRouter = require('./routes/student.route.js');
 const attendanceRouter = require('./routes/attendance.route.js');
 const absenceRouter = require('./routes/absence.route.js');
 const lessoneRouter = require('./routes/lesson.route.js');
+const CategoryRouter = require('./routes/category.route.js');
+const Category = require('./models/category.js');
 const DayTime = require('./models/day_time.js');
 const User = require('./models/user.js');
 const TestName = require('./models/test_name.js');
@@ -39,6 +41,8 @@ Klass.belongsTo(User);
 Klass.belongsTo(DayTime);
 Klass.hasMany(Student);
 
+Category.hasMany(Student);
+
 Attendance.belongsTo(Student);
 
 Lesson.belongsTo(Student);
@@ -51,6 +55,7 @@ Test.belongsTo(Student);
 Test.belongsTo(TestName);
 Test.hasMany(TestMark, {as: "marks"});
 
+Student.belongsTo(Category);
 Student.belongsTo(Klass);
 Student.hasMany(Test);
 Student.hasMany(Attendance);
@@ -74,6 +79,7 @@ app.use(marksRouter);
 app.use(attendanceRouter);
 app.use(lessoneRouter);
 app.use(absenceRouter);
+app.use(CategoryRouter);
 
 app.listen("8080", "localhost", async () => {
   await dbConnection.sync({ alter: false, force: false });

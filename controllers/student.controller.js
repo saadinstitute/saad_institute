@@ -6,19 +6,20 @@ const { Op, Sequelize } = require("sequelize");
 const Student = require('../models/student');
 const Klass = require('../models/klass');
 const Absence = require('../models/absence');
+const Category = require('../models/category');
 
 const addStudent = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const data = await getFormFromReq(req);
-        const { firstName, lastName, dateOfBirth, joinedAt, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, image, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
+        const { firstName, lastName, dateOfBirth, joinedAt, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, image, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId } = data;
         await validateAdmin(req);
         let imageUrl;
         if (image) {
             const resCloudinary = await cloudinary.uploader.upload(image.filepath);
             imageUrl = resCloudinary.url;
         }
-        const student = await Student.create({ imageUrl, firstName, lastName, joinedAt, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId });
+        const student = await Student.create({ imageUrl, firstName, lastName, joinedAt, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId });
         res.send(new BaseResponse({ data: student, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -57,22 +58,28 @@ const getStudents = async (req, res) => {
             where: query,
             offset: start * size,
             limit: size,
-            include: [{
-                model: Klass,
-                as: "klass",
-                required: user.role === "teacher",
-                where: {
-                    ...((user.role === "teacher") && { "userId": user.id })
-                }
-            }, {
-                model: Absence,
-                required: false,
-                separate: true,
-                order: [
-                    ["beginAt",  "DESC"]
-                ],
-                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
-            }],
+            include: [
+                {
+                    model: Klass,
+                    as: "klass",
+                    required: user.role === "teacher",
+                    where: {
+                        ...((user.role === "teacher") && { "userId": user.id })
+                    }
+                },
+                {
+                    model: Category,
+                    as: "category",
+                },
+                {
+                    model: Absence,
+                    required: false,
+                    separate: true,
+                    order: [
+                        ["beginAt", "DESC"]
+                    ],
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+                }],
             attributes: { exclude: ["klassId"] },
         });
 
@@ -91,7 +98,7 @@ const updateStudent = async (req, res) => {
         const data = await getFormFromReq(req);
         const { id, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation,
             motherName, motherEducation, sisters, brothers, previousInstitute, joinedAt, previousAchievement, imageUrl, fatherPhone, whatsappNumber,
-            phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId } = data;
+            phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId } = data;
         await validateAdmin(req);
         const studnet = await Student.findByPk(id);
         if (!studnet) {
@@ -125,6 +132,7 @@ const updateStudent = async (req, res) => {
         studnet.schoolCohort = schoolCohort;
         studnet.currentAddress = currentAddress;
         studnet.klassId = klassId;
+        studnet.categoryId = categoryId;
         await studnet.save();
         res.send(new BaseResponse({ data: studnet, success: true, msg: "updated successfully", lang }));
     } catch (error) {
