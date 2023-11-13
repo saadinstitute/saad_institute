@@ -32,12 +32,17 @@ const getTests = async (req, res) => {
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        if (user.role === "tester" && user.role !== "admin" && user.role !== "superAdmin") {
+        if (user.role === "tester") {
             query.testerId = user.id;
         }
         if (studentId) {
             query.studentId = studentId;
         }
+        const justPendingTests = user.role !== "tester";
+        // console.log("-----------------------------");
+        // console.log(query.testerId);
+        // console.log(justPendingTests);
+        // console.log("-----------------------------");
         const data = await Test.findAndCountAll({
             where: query,
             offset: start * size,
@@ -50,11 +55,11 @@ const getTests = async (req, res) => {
                 Student,
                 {
                     model: TestMark,
-                    required: user.role !== "tester",
+                    required: false,
                     as: "marks",
-                    where: {
-                        ...((user.role === "tester") && {"id": null})
-                    }
+                    // where: justPendingTests?{
+                    //     "id": null
+                    // }:{}
                 },
             ],
             subQuery: false,
