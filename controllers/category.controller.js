@@ -28,7 +28,7 @@ const getCategories = async (req, res) => {
         const { pageSize = 10, page = 0, search } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        if ((user.role == "admin" || user.role == "superAdmin")) {
+        if ((user.role !== "admin" || user.role !== "superAdmin")) {
             return res.status(403).send(new BaseResponse({ status: 403, msg: "لايوجد لديك صلاحية" }));
         }
         let query = {};
