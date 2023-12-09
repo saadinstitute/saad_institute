@@ -25,7 +25,7 @@ const getStudentAttendance = async (req, res) => {
         if (isPresent) {
             query.isPresent = isPresent;
         }
-        if(start && end){
+        if(startDate && end){
             query.date = {
             [Op.between]: [Date(startDate), Date(endDate)]
         }
