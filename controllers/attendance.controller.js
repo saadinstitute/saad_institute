@@ -27,7 +27,7 @@ const getStudentAttendance = async (req, res) => {
         }
         if(startDate && endDate){
             query.date = {
-            [Op.between]: [Date(startDate), Date(endDate)]
+            [Op.between]: [new Date(startDate), new Date(endDate)]
         }
         }
         const data = await Attendance.findAndCountAll({
