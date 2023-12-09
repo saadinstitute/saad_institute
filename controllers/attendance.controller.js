@@ -18,7 +18,7 @@ const addAttencance = async (req, res) => {
 const getStudentAttendance = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, isPresent, studentId, start, end } = req.query;
+        const { pageSize = 10, page = 0, isPresent, studentId, startDate, end } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         const query = { studentId };
