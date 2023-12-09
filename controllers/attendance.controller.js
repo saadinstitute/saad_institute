@@ -18,12 +18,17 @@ const addAttencance = async (req, res) => {
 const getStudentAttendance = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const { pageSize = 10, page = 0, isPresent, studentId } = req.query;
+        const { pageSize = 10, page = 0, isPresent, studentId, start, end } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         const query = { studentId };
         if (isPresent) {
             query.isPresent = isPresent;
+        }
+        if(start && end){
+            query.date = {
+            [Op.between]: [Date(startDate), Date(endDate)]
+        }
         }
         const data = await Attendance.findAndCountAll({
             where: query,
