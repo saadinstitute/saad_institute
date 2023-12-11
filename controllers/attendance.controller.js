@@ -56,7 +56,7 @@ const updateAttendance = async (req, res) => {
         attendance.date = date;
         attendance.isPresent = Boolean(isPresent);
         await attendance.save();
-        res.send(new BaseResponse({ data: test, success: true, msg: "updated successfully", lang }));
+        res.send(new BaseResponse({ data: attendance, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
