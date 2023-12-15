@@ -65,7 +65,7 @@ const deleteLesson = async (req, res) => {
         const id = req.params.id;
         const lesson = await Lesson.findByPk(id);
         if (!lesson) return res.send(new BaseResponse({ success: false, status: 404, msg: "there is no lesson with this id", lang }));
-        const isSuccess = !(!(await attencance.destroy()));
+        const isSuccess = !(!(await lesson.destroy()));
         res.send(new BaseResponse({ success: !(!isSuccess), msg: isSuccess ? "deleted successfully" : "there is someting wrong, please try again later", lang }));
     } catch (error) {
         console.log(error);
