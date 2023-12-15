@@ -48,7 +48,7 @@ const getTests = async (req, res) => {
             offset: start * size,
             limit: size,
             order: [
-                ['createdAt', 'DESC'],
+                ['createdAt', 'ASC'],
             ],
             include: [
                 TestName,
