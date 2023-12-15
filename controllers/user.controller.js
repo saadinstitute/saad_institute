@@ -69,15 +69,15 @@ const register = async (req, res) => {
         let body = req.body;
         const emailUser = await User.findOne({ where: { email: body.email } });
         if (emailUser) {
-            return res.send(new BaseResponse({ success: false, msg: "email is already exist", status: 409, lang }));
+            return res.status(409).send(new BaseResponse({ success: false, msg: "email is already exist", status: 409, lang }));
         }
         const userName = await User.findOne({ where: { username: body.username } });
         if (userName) {
-            return res.send(new BaseResponse({ success: false, msg: "username is already exist", status: 409, lang }));
+            return res.status(409).send(new BaseResponse({ success: false, msg: "username is already exist", status: 409, lang }));
         }
         const userNumber = await User.findOne({ where: { mobile: body.mobile } });
         if (userNumber) {
-            return res.send(new BaseResponse({ success: false, msg: "mobile is already exist", status: 409, lang }));
+            return res.status(409).send(new BaseResponse({ success: false, msg: "mobile is already exist", status: 409, lang }));
         }
         if (body.type === "user") body.role = "user";
         else if (body.type === "owner") body.role = "admin";
@@ -112,10 +112,10 @@ const login = async (req, res) => {
         const { mobile, password, fbToken } = req.body;
         const user = await User.findOne({ where: { mobile } });
         if (!user) {
-            return res.send(new BaseResponse({ msg: "user not found", status: 404, success: false, lang }));
+            return res.status(404).send(new BaseResponse({ msg: "user not found", status: 404, success: false, lang }));
         }
         if (user.password != password) {
-            return res.send(new BaseResponse({ msg: "password is not correct", status: 403, success: false, lang }));
+            return res.status(403).send(new BaseResponse({ msg: "password is not correct", status: 403, success: false, lang }));
         }
         if (fbToken) {
             user.fbToken = fbToken;
