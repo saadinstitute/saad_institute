@@ -105,7 +105,7 @@ const updateStudent = async (req, res) => {
             return res.send(new BaseResponse({ success: false, msg: "student not fount", status: 400, lang }));
         }
         if (image) {
-            const resCloudinary = await cloudinary.uploader.upload(imageUrl.filepath);
+            const resCloudinary = await cloudinary.uploader.upload(image.filepath);
             studnet.imageUrl = resCloudinary.url;
         }
         studnet.firstName = firstName;
