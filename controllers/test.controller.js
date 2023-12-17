@@ -38,7 +38,7 @@ const getTests = async (req, res) => {
         if (studentId) {
             query.studentId = studentId;
         }
-        const justPendingTests = user.role !== "tester";
+        const justPendingTests = user.role === "tester";
         // console.log("-----------------------------");
         // console.log(query.testerId);
         // console.log(justPendingTests);
