@@ -50,7 +50,7 @@ const updateLesson = async (req, res) => {
         lesson.quantity = quantity;
         lesson.note = note;
         await lesson.save();
-        res.send(new BaseResponse({ data: test, success: true, msg: "updated successfully", lang }));
+        res.send(new BaseResponse({ data: lesson, success: true, msg: "updated successfully", lang }));
     } catch (error) {
         console.log(error);
         res.status(400).send(new BaseResponse({ success: false, msg: error, lang }));
