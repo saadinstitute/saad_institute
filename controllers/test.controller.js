@@ -57,9 +57,9 @@ const getTests = async (req, res) => {
                     model: TestMark,
                     required: false,
                     as: "marks",
-                    // where: justPendingTests?{
-                    //     "id": null
-                    // }:{}
+                    where: justPendingTests?{
+                        "id": null
+                    }:{}
                 },
             ],
             subQuery: false,
