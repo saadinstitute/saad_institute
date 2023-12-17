@@ -43,6 +43,16 @@ const getTests = async (req, res) => {
         // console.log(query.testerId);
         // console.log(justPendingTests);
         // console.log("-----------------------------");
+        const marks = await TestMark.findAll({
+            attributes: ["testId"],
+            group: ["testId"]
+        });
+        console.log(marks);
+        const testIds = marks.map(mark => mark.testId);
+        console.log(testIds);
+        if (justPendingTests) {
+            query.id = { [Op.notIn]: testIds };
+        }
         const data = await Test.findAndCountAll({
             where: query,
             offset: start * size,
@@ -57,9 +67,9 @@ const getTests = async (req, res) => {
                     model: TestMark,
                     required: false,
                     as: "marks",
-                    where: justPendingTests?{
-                        "id": null
-                    }:{}
+                    // where: justPendingTests ? {
+                    //     testId: { [Op.notIn]: testIds }
+                    // } : {}
                 },
             ],
             subQuery: false,
@@ -84,7 +94,7 @@ const updateTest = async (req, res) => {
         await validateUser(req);
         if (!data.id) return res.send(new BaseResponse({ success: false, status: 400, msg: "id field is required", lang }));
         const test = await Test.findByPk(data.id);
-        let { studentId, teacherId, testerId,  testNameId, marks } = req.body;
+        let { studentId, teacherId, testerId, testNameId, marks } = req.body;
         test.studentId = studentId;
         test.teacherId = teacherId;
         test.teacherId = testerId;
