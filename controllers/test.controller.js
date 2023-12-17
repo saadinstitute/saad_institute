@@ -55,7 +55,7 @@ const getTests = async (req, res) => {
                 Student,
                 {
                     model: TestMark,
-                    required: false,
+                    required: justPendingTests,
                     as: "marks",
                     where: justPendingTests?{
                         "id": null
