@@ -64,7 +64,7 @@ const getStudents = async (req, res) => {
                     as: "klass",
                     required: user.role === "teacher",
                     where: {
-                        ...((user.role === "teacher") && { "userId": user.id })
+                        ...((user.role === "teacher") && { "teacherId": user.id })
                     }
                 },
                 {
