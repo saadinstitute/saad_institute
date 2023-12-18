@@ -70,14 +70,7 @@ const getStudents = async (req, res) => {
             offset: start * size,
             limit: size,
             include: [
-                {
-                    model: Klass,
-                    as: "klass",
-                    // required: user.role === "teacher",
-                    // where: {
-                    //     ...((user.role === "teacher") && { "teacherId": user.id })
-                    // }
-                },
+                Klass,
                 {
                     model: Category,
                     as: "category",
@@ -91,7 +84,7 @@ const getStudents = async (req, res) => {
                     ],
                     attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
                 }],
-            attributes: { exclude: ["klassId"] },
+            // attributes: { exclude: ["klassId"] },
         });
 
         const students = data.rows;
