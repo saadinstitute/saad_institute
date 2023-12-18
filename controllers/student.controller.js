@@ -35,7 +35,6 @@ const getStudents = async (req, res) => {
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
         let query = {};
-        let include = [];
         if (search) {
             query[Op.or] = [
                 {
@@ -51,18 +50,22 @@ const getStudents = async (req, res) => {
             ];
 
         }
-        if(user.role === "teacher"){
-        const klasses = await Klass.findAll({
-            attributes: ["teacherId"],
-            group: ["teacherId"],
-            where: {
-                teacherId: user.id
-            }
-        });
-        const klassesId = klasses.map(klass => klass.teacherId);
-        query.klassId = { [Op.notIn]: klassesId };
+        if (user.role === "teacher") {
+            console.log("teacher:");
+            console.log(user.id);
+            const klasses = await Klass.findAll({
+                attributes: ["teacherId"],
+                group: ["teacherId"],
+                where: {
+                    teacherId: user.id
+                }
+            });
+            const klassesId = klasses.map(klass => klass.teacherId);
+            query.klassId = { [Op.notIn]: klassesId };
         }
         if (klassId) {
+            console.log("klassId:");
+            console.log(klassId);
             query.klassId = klassId;
         }
         const data = await Student.findAndCountAll({
@@ -70,7 +73,11 @@ const getStudents = async (req, res) => {
             offset: start * size,
             limit: size,
             include: [
-                Klass,
+                {
+                    model: Klass,
+                    as: "klass",
+                    paranoid: false
+                },
                 {
                     model: Category,
                     as: "category",
