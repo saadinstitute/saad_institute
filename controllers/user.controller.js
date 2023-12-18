@@ -236,14 +236,14 @@ const forgetPassword = async (req, res) => {
 const updateUser = async (req, res) => {
     const lang = req.headers["lang"];
     try {
-        const client = await validateUser(req);
+        await validateAdmin(req);
         const data = req.body;
         if (!data.id) return res.send(new BaseResponse({ success: false, status: 403, msg: "id field is required", lang }));
         const user = await User.findByPk(data.id);
         if (!user) return res.send(new BaseResponse({ success: false, status: 404, msg: "user not found", lang }));
-        if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
-            return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
-        }
+        // if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
+        //     return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
+        // }
         const { firstName, lastName, password, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, joinedAt, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
         user.firstName = firstName;
         user.lastName = lastName;
