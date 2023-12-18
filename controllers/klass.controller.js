@@ -1,6 +1,7 @@
 const BaseResponse = require('../models/base_response');
 const DayTime = require('../models/day_time');
 const Klass = require('../models/klass');
+const User = require('../models/user');
 const Student = require('../models/student');
 const { validateAdmin, validateUser } = require("../others/validator");
 const { Op, Sequelize } = require("sequelize");
@@ -48,6 +49,10 @@ const getKlasses = async (req, res) => {
             limit: size,
             include: [
                 DayTime,
+                {
+                    model: User,
+                    as: :"teacher"
+                },
                 {
                     model: Student,
                     attributes: []
