@@ -47,10 +47,14 @@ const getKlasses = async (req, res) => {
             offset: start * size,
             limit: size,
             include: [
-                DayTime,
+                {
+                    model: DayTime,
+                    paranoid: false
+                },
                 {
                     model: User,
-                    as: "teacher"
+                    as: "teacher",
+                    paranoid: false
                 },
                 {
                     model: Student,
@@ -61,7 +65,7 @@ const getKlasses = async (req, res) => {
                 include: [
                     [Sequelize.fn("COUNT", Sequelize.col("students.id")), "studentsCount"]
                 ],
-                exclude: ["dayTimeId","teacherId"]
+                exclude: ["dayTimeId", "teacherId"]
             },
             group: ['id'],
             subQuery: false

@@ -81,6 +81,7 @@ const getStudents = async (req, res) => {
                 {
                     model: Category,
                     as: "category",
+                    paranoid: false
                 },
                 {
                     model: Absence,
@@ -89,7 +90,8 @@ const getStudents = async (req, res) => {
                     order: [
                         ["beginAt", "DESC"]
                     ],
-                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                    paranoid: false
                 }],
             // attributes: { exclude: ["klassId"] },
         });
