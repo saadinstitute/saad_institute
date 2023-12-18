@@ -244,10 +244,13 @@ const updateUser = async (req, res) => {
         if (client.id !== user.id && client.role !== "superAdmin" && client.role !== "admin") {
             return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
         }
-        const { firstName, lastName, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, joinedAt, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
+        const { firstName, lastName, password, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, joinedAt, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
         user.firstName = firstName;
         user.lastName = lastName;
         user.fatherName = fatherName;
+        if (password) {
+            user.password = password;
+        }
         user.dateOfBirth = dateOfBirth;
         user.joinedAt = joinedAt;
         user.placeOfBirth = placeOfBirth;
