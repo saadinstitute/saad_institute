@@ -93,11 +93,11 @@ const User = dbConnection.define('user', {
     timestamps: true,
     freezeTableName: true,
     paranoid: true,
-    defaultScope: {
-        attributes: {
-            exclude: ['password']
-        }
-    }
+    // defaultScope: {
+    //     attributes: {
+    //         exclude: ['password']
+    //     }
+    // }
 
 });
 
