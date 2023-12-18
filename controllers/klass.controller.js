@@ -51,7 +51,7 @@ const getKlasses = async (req, res) => {
                 DayTime,
                 {
                     model: User,
-                    as: :"teacher"
+                    as: "teacher"
                 },
                 {
                     model: Student,
