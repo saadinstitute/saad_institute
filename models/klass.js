@@ -14,7 +14,7 @@ const Klass = dbConnection.define('klass', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    userId: {
+    teacherId: {
         type: DataTypes.UUID,
         allowNull: true,
         references: {
@@ -33,7 +33,7 @@ const Klass = dbConnection.define('klass', {
 },{
     timestamps: true,
     freezeTableName: true,
-    paranoid: true
+    paranoid: true,
 });
 
 

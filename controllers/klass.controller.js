@@ -12,9 +12,8 @@ const addKlass = async (req, res) => {
     try {
 
         const data = req.body;
-        const { name, userId, dayTimeId } = data;
         await validateAdmin(req);
-        const klass = await Klass.create({ name, userId, dayTimeId });
+        const klass = await Klass.create(data);
         res.send(new BaseResponse({ data: klass, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -49,7 +48,10 @@ const getKlasses = async (req, res) => {
             limit: size,
             include: [
                 DayTime,
-                User,
+                {
+                    model: User,
+                    as: "teacher"
+                },
                 {
                     model: Student,
                     attributes: []
@@ -59,7 +61,7 @@ const getKlasses = async (req, res) => {
                 include: [
                     [Sequelize.fn("COUNT", Sequelize.col("students.id")), "studentsCount"]
                 ],
-                exclude: ["dayTimeId"]
+                exclude: ["dayTimeId","teacherId"]
             },
             group: ['id'],
             subQuery: false
