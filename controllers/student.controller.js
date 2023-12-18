@@ -51,6 +51,17 @@ const getStudents = async (req, res) => {
             ];
 
         }
+        if(user.role === "teacher"){
+        const klasses = await Klass.findAll({
+            attributes: ["teacherId"],
+            group: ["teacherId"],
+            where: {
+                teacherId: user.id
+            }
+        });
+        const klassesId = klasses.map(klass => klass.teacherId);
+        query.klassId = { [Op.notIn]: klassesId };
+        }
         if (klassId) {
             query.klassId = klassId;
         }
@@ -62,10 +73,10 @@ const getStudents = async (req, res) => {
                 {
                     model: Klass,
                     as: "klass",
-                    required: user.role === "teacher",
-                    where: {
-                        ...((user.role === "teacher") && { "teacherId": user.id })
-                    }
+                    // required: user.role === "teacher",
+                    // where: {
+                    //     ...((user.role === "teacher") && { "teacherId": user.id })
+                    // }
                 },
                 {
                     model: Category,
