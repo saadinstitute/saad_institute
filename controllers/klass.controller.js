@@ -49,10 +49,7 @@ const getKlasses = async (req, res) => {
             limit: size,
             include: [
                 DayTime,
-                {
-                    model: User,
-                    as: "teacher"
-                },
+                User,
                 {
                     model: Student,
                     attributes: []

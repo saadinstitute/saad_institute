@@ -37,7 +37,7 @@ User.hasMany(Test);
 User.hasMany(Klass);
 
 
-Klass.belongsTo(User);
+Klass.belongsTo(User,{as:"teacher"});
 Klass.belongsTo(DayTime);
 Klass.hasMany(Student);
 
