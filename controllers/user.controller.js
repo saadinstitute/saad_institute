@@ -28,7 +28,8 @@ const users = async (req, res) => {
         const user = await validateUser(req);
         if (role && (user.role === "admin" || user.role === "superAdmin" || (role !== "admin" && role !== "superAdmin"))) {
             query.role = role;
-        } else if(user.role !== "admin" && user.role !== "superAdmin"){
+        }
+        else if (user.role !== "admin" && user.role !== "superAdmin") {
             query.role = ["tester", "teacher"];
         }
         if (search) {
@@ -52,7 +53,15 @@ const users = async (req, res) => {
                 ]
             };
         }
-        const data = await User.findAndCountAll({ where: query, offset: start * size, limit: size, attributes: { exclude: ['password'] } });
+        const data = await User.findAndCountAll({
+            where: query,
+            offset: start * size,
+            limit: size,
+            // attributes: user.role === "admin" || user.role === "superAdmin"?{
+            //     exclude: ['password']
+            // }:{}
+        },
+        );
         const users = data.rows;
         const usersCount = data.count;
         res.send(new BaseResponse({ data: users, success: true, msg: "success", lang, pagination: { total: usersCount, page: start, pageSize: size } }));
