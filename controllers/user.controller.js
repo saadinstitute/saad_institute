@@ -245,6 +245,16 @@ const updateUser = async (req, res) => {
         //     return res.send(new BaseResponse({ success: false, status: 403, msg: "you can't edit this account", lang }));
         // }
         const { firstName, lastName, password, fatherName, mobile, landlinePhone, dateOfBirth, placeOfBirth, joinedAt, currentAddress, permanintAddress, isMarried, nationalId, brothers, sisters, currentWork, gender, role, isConfirmed } = data;
+        if (user.isConfirmed && !isConfirmed) {
+            const confirmedUsers = await User.count({
+                where: {
+                    isConfirmed: true
+                }
+            });
+            if (confirmedUsers === 1) {
+                return res.send(new BaseResponse({ success: false, status: 403, msg: "there should be at least one confirmed account", lang }));
+            }
+        }
         user.firstName = firstName;
         user.lastName = lastName;
         user.fatherName = fatherName;

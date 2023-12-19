@@ -51,5 +51,6 @@
     "unsubscribed successfully":"تم الغاء الاشتراك بنجاح",
     "there is no delivery company with the id":"شركة التوصيل غير موجودة",
     "should be at least one meal":"يجب ان يحوي الطلب على وجبة واحدة فقط",
-    "there is no test with this id":"الاختبار غير موجود"
+    "there is no test with this id":"الاختبار غير موجود",
+    "there should be at least one confirmed account":"يجب ان يكون على الاقل حساب واحد مؤكد"
 }
