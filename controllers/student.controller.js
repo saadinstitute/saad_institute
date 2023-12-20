@@ -50,21 +50,21 @@ const getStudents = async (req, res) => {
             ];
 
         }
+        if (klassId) {
+            console.log("klassId:");
+            console.log(klassId);
+            query.klassId = klassId;
+        }
         if (user.role === "teacher") {
-            console.log("teacher:");
-            console.log(user.id);
             const klasses = await Klass.findAll({
                 where: {
                     teacherId: user.id
                 }
             });
             const klassesId = klasses.map(klass => klass.id);
-            console.log(klassesId);
             query.klassId = { [Op.in]: klassesId };
         }
-        if (klassId) {
-            console.log("klassId:");
-            console.log(klassId);
+        if (klassId && user.role !== "teacher") {
             query.klassId = klassId;
         }
         const data = await Student.findAndCountAll({
