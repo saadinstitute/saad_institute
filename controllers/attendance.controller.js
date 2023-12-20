@@ -7,7 +7,15 @@ const addAttencance = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         await validateUser(req);
-        const attendance = await Attendance.create(req.body);
+        const datetime = new Date(req.body.date);
+        const date = new Date(`${datetime.getFullYear()}-${(datetime.getMonth() + 1).toString().padStart(2, '0')}-${datetime.getDate().toString().padStart(2, '0')}`);
+        let attendance = await Attendance.findOne({ where: { date, studentId: req.body.studentId } });
+        if (attendance) {
+            attendance.isPresent = req.body.isPresent;
+            await attendance.save();
+        } else {
+            attendance = await Attendance.create(req.body);
+        }
         res.send(new BaseResponse({ data: attendance, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -21,14 +29,17 @@ const getStudentAttendance = async (req, res) => {
         const { pageSize = 10, page = 0, isPresent, studentId, startDate, endDate } = req.query;
         const size = Number(pageSize) ?? 10;
         const start = Number(page) ?? 0;
-        const query = { studentId };
+        const query = {};
         if (isPresent) {
             query.isPresent = isPresent;
         }
-        if(startDate && endDate){
-            query.date = {
-            [Op.between]: [new Date(startDate), new Date(endDate)]
+        if (studentId) {
+            query.studentId = studentId;
         }
+        if (startDate && endDate) {
+            query.date = {
+                [Op.between]: [new Date(startDate), new Date(endDate)]
+            }
         }
         const data = await Attendance.findAndCountAll({
             where: query,
