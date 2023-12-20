@@ -38,14 +38,10 @@ const getStudents = async (req, res) => {
         if (search) {
             query[Op.or] = [
                 {
-                    firstName: {
-                        [Op.like]: `%${search}%`
-                    }
-                },
-                {
-                    lastName: {
-                        [Op.like]: `%${search}%`
-                    }
+                    [Op.and]: Sequelize.where(
+                        Sequelize.fn('concat', Sequelize.col('firstName'), ' ', Sequelize.col('lastName')),
+                        { [Op.like]: `%${search}%` }
+                    )
                 }
             ];
 
