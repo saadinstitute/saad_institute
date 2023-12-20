@@ -54,14 +54,13 @@ const getStudents = async (req, res) => {
             console.log("teacher:");
             console.log(user.id);
             const klasses = await Klass.findAll({
-                attributes: ["teacherId"],
-                group: ["teacherId"],
                 where: {
                     teacherId: user.id
                 }
             });
-            const klassesId = klasses.map(klass => klass.teacherId);
-            query.klassId = { [Op.notIn]: klassesId };
+            const klassesId = klasses.map(klass => klass.id);
+            console.log(klassesId);
+            query.klassId = { [Op.in]: klassesId };
         }
         if (klassId) {
             console.log("klassId:");
