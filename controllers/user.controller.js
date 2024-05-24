@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const BaseResponse = require('../models/base_response');
 const cloudinary = require('../others/cloudinary.config');
 const config = require('../config.js');
@@ -8,15 +7,6 @@ const store = require('store');
 const formidable = require('formidable');
 const { validateSuperAdmin, validateAdmin, validateUser } = require("../others/validator");
 const { Op } = require("sequelize");
-
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'foodies.project5@gmail.com',
-        pass: config.EMAIL_PASS
-    }
-});
 
 const users = async (req, res) => {
     const lang = req.headers["lang"];
@@ -311,44 +301,12 @@ function generateToken(user_id) {
     return token;
 }
 
-function sendMail(to, text, errorFun, successFun) {
-    var mailOptions = {
-        from: 'foodies.project5@gmail.com',
-        to,
-        subject: 'Confirm email from Foodies ^_^',
-        html: text
-    };
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            errorFun(error);
-        } else {
-            successFun(info.response);
-        }
-    });
-}
-
 async function saveUserCode(userId) {
     const code = Math.floor(Math.random() * 90000) + 10000;
     var expireAt = new Date(new Date() + 30 * 60000);
     const data = { code, expireAt };
     await store.set(userId, data);
     return code;
-}
-
-function mailHtml(code, reason) {
-    return `<td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
-    <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
-    <tbody>
-    <tr><td style="padding: 40px 0px 0px;">
-    <div style="text-align: center;"><div style="padding-bottom: 20px;">
-    <img src="https://i.ibb.co/9h7jksF/foodies-logo.png" alt="Foodies" width="100"></div>
-    </div> <div style="padding: 20px; background-color: rgb(255, 255, 255);"><div style="color: rgb(0, 0, 0); text-align: center;">
-    <h1 style="margin: 1rem 0">Verification code</h1>
-    <p style="padding-bottom: 16px">Please use the verification code below to ${reason}.</p><p style="padding-bottom: 16px">
-    <strong style="font-size: 130%">${code}</strong></p>
-    <p style="padding-bottom: 16px">If you didn’t request this, you can ignore this email.</p>
-    <p style="padding-bottom: 16px">Thanks,<br>Foodies team</p></div>
-    </div> <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"></div></td></tr></tbody></table></td>`;
 }
 
 function getFormFromReq(req) {

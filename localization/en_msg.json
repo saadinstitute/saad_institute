@@ -52,5 +52,6 @@
     "there is no delivery company with the id":"There is no delivery company with the id",
     "should be at least one meal":"Should be at least one meal",
     "there is no test with this id":"There is no test with this id",
-    "there should be at least one confirmed account":"There should be at least one confirmed account"
+    "there should be at least one confirmed account":"There should be at least one confirmed account",
+    "there is no dailytest with this id":"The test not found"
 }
