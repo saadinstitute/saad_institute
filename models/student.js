@@ -58,6 +58,10 @@ const Student = dbConnection.define('student', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    beginFromPage: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     previousInstitute: {
         type: DataTypes.STRING,
         allowNull: true

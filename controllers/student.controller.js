@@ -6,20 +6,29 @@ const { Op, Sequelize } = require("sequelize");
 const Student = require('../models/student');
 const Klass = require('../models/klass');
 const Absence = require('../models/absence');
+const Lesson = require('../models/lesson');
 const Category = require('../models/category');
+const DailyTest = require('../models/daily_test');
+const Attendance = require('../models/attendance');
+const DayTime = require('../models/day_time');
+const Test = require('../models/test');
+const moment = require('moment');
 
 const addStudent = async (req, res) => {
     const lang = req.headers["lang"];
     try {
         const data = await getFormFromReq(req);
-        const { firstName, lastName, dateOfBirth, joinedAt, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, image, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId } = data;
-        await validateAdmin(req);
+        const { firstName, lastName, dateOfBirth,beginFromPage, joinedAt, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters, brothers, previousInstitute, previousAchievement, image, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId } = data;
+        const user = await validateUser(req);
+        if (user.role === "user") {
+            return res.send(new BaseResponse({ success: false, msg: "forbidden", status: 403, lang }));
+        }
         let imageUrl;
         if (image) {
             const resCloudinary = await cloudinary.uploader.upload(image.filepath);
             imageUrl = resCloudinary.url;
         }
-        const student = await Student.create({ imageUrl, firstName, lastName, joinedAt, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId });
+        const student = await Student.create({ imageUrl, firstName,beginFromPage, lastName, joinedAt, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation, motherName, motherEducation, sisters: Number(sisters), brothers: Number(brothers), previousInstitute, previousAchievement, fatherPhone, whatsappNumber, phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId });
         res.send(new BaseResponse({ data: student, success: true, msg: "success", lang }));
     } catch (error) {
         console.log(error);
@@ -71,6 +80,22 @@ const getStudents = async (req, res) => {
                 {
                     model: Klass,
                     as: "klass",
+                    include: {
+                        model: DayTime,
+                        as: "day_time",
+                        paranoid: false
+                    },
+                    paranoid: false
+                },
+                {
+                    model: Test,
+                    as: "tests",
+                    required: false,
+                    separate: true,
+                    order: [
+                        ["createdAt", "DESC"]
+                    ],
+                    limit:1,
                     paranoid: false
                 },
                 {
@@ -80,18 +105,89 @@ const getStudents = async (req, res) => {
                 },
                 {
                     model: Absence,
+                    as: 'absences',
                     required: false,
                     separate: true,
                     order: [
                         ["beginAt", "DESC"]
                     ],
+                    limit:1,
                     attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
                     paranoid: false
-                }],
+                },
+                {
+                    model: Lesson,
+                    as: 'lessons',
+                    required: false,
+                    separate: true,
+                    order: [
+                        ["date", "DESC"]
+                    ],
+                    limit:1,
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                    paranoid: false
+                },
+                {
+                    model: DailyTest,
+                    as:"daily_tests",
+                    required: false,
+                    separate: true,
+                    order: [
+                        ["date", "DESC"]
+                    ],
+                    limit: 1,
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                    paranoid: false
+                },
+                {
+                    model: Attendance,
+                    as: 'attendances',
+                    required: false,
+                    separate: true,
+                    order: [
+                        ["date", "DESC"]
+                    ],
+                    limit: 1,
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                    paranoid: false
+                }
+            ],
             // attributes: { exclude: ["klassId"] },
         });
 
-        const students = data.rows;
+        const students = data.rows.map(student => {
+            // Extract the latest lesson if it exists
+            const latestLesson = student.lessons && student.lessons.length > 0 ? student.lessons[0] : null;
+    
+            // Extract the latest absence if it exists
+            const latestAbsence = student.absences && student.absences.length > 0 ? student.absences[0] : null;
+    
+            // Extract the latest daily test if it exists
+            const latestDailyTest = student.daily_tests && student.daily_tests.length > 0 ? student.daily_tests[0] : null;
+    
+            // Extract the latest attendance if it exists
+            const latestAttendance = student.attendances && student.attendances.length > 0 ? student.attendances[0] : null;
+    
+            // Extract the latest tset if it exists
+            const latestTestDate = student.tests && student.tests.length > 0 ? student.tests[0].createdAt : null;
+
+            // Convert Sequelize instance to plain object and add latestLesson, latestAbsence, and latestDailyTest directly
+            const studentPlain = student.get({ plain: true });
+            studentPlain.latestLesson = latestLesson;
+            studentPlain.latestAbsence = latestAbsence;
+            studentPlain.latestDailyTest = latestDailyTest;
+            studentPlain.latestAttendance = latestAttendance;
+            studentPlain.latestTestDate = latestTestDate;
+
+
+            delete studentPlain.lessons;  // Remove the separate lessons array
+            delete studentPlain.absences;  // Remove the separate absences array
+            delete studentPlain.daily_tests;  // Remove the separate dailyTests array
+            delete studentPlain.attendances;  // Remove the separate attendances array
+            delete studentPlain.test;  // Remove the separate attendances array
+    
+            return studentPlain;
+        });
         const studentsCount = data.count;
         res.send(new BaseResponse({ data: students, success: true, msg: "success", lang, pagination: { total: studentsCount, page: start, pageSize: size } }));
     } catch (error) {
@@ -106,7 +202,7 @@ const updateStudent = async (req, res) => {
         const data = await getFormFromReq(req);
         const { id, firstName, lastName, dateOfBirth, placeOfBirth, fatherName, fatherWork, fatherEducation,
             motherName, motherEducation, sisters, brothers, previousInstitute, joinedAt, previousAchievement, image, fatherPhone, whatsappNumber,
-            phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId } = data;
+            phoneNumber, landlineNumber, specialHealth, skill, school, schoolCohort, currentAddress, klassId, categoryId, beginFromPage } = data;
         await validateAdmin(req);
         const studnet = await Student.findByPk(id);
         if (!studnet) {
@@ -125,6 +221,7 @@ const updateStudent = async (req, res) => {
         studnet.fatherWork = fatherWork;
         studnet.fatherEducation = fatherEducation;
         studnet.motherName = motherName;
+        studnet.beginFromPage = beginFromPage;
         studnet.motherEducation = motherEducation;
         studnet.sisters = Number(sisters);
         studnet.brothers = Number(brothers);

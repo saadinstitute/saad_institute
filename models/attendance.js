@@ -24,6 +24,7 @@ const Attendance = dbConnection.define('attendance', {
     date: {
         type: DataTypes.DATE,
         allowNull: false,
+        unique: true,
     },
     
 },{

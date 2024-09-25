@@ -16,6 +16,7 @@ const lessoneRouter = require('./routes/lesson.route.js');
 const dailyTestRouter = require('./routes/daily_test.route.js');
 const waqfTestRouter = require('./routes/waqf_test.route.js');
 const CategoryRouter = require('./routes/category.route.js');
+const AppRouter = require('./routes/app.route.js');
 const Category = require('./models/category.js');
 const DayTime = require('./models/day_time.js');
 const User = require('./models/user.js');
@@ -92,8 +93,9 @@ app.use(absenceRouter);
 app.use(CategoryRouter);
 app.use(dailyTestRouter);
 app.use(waqfTestRouter);
+app.use(AppRouter);
 
-app.listen("8080", "192.168.1.10", async () => {
+app.listen(port, "192.168.43.155", async () => {
   await dbConnection.sync({ alter: false, force: false });
   console.log(`Example app listening on port ${port}`);
 })
