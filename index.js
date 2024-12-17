@@ -95,7 +95,7 @@ app.use(dailyTestRouter);
 app.use(waqfTestRouter);
 app.use(AppRouter);
 
-app.listen(port, "192.168.43.155", async () => {
+app.listen(port, "192.168.1.12", async () => {
   await dbConnection.sync({ alter: false, force: false });
   console.log(`Example app listening on port ${port}`);
 })

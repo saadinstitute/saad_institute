@@ -12,6 +12,7 @@ const DailyTest = require('../models/daily_test');
 const Attendance = require('../models/attendance');
 const DayTime = require('../models/day_time');
 const Test = require('../models/test');
+const TestName = require('../models/test_name');
 const moment = require('moment');
 
 const addStudent = async (req, res) => {
@@ -85,6 +86,18 @@ const getStudents = async (req, res) => {
                         as: "day_time",
                         paranoid: false
                     },
+                    attributes: {
+                        include: [
+                            [
+                                Sequelize.literal(`(
+                                    SELECT COUNT(*)
+                                    FROM student AS students
+                                    WHERE students.klassId = klass.id
+                                )`),
+                                "studentsCount"
+                            ]
+                        ]
+                    },
                     paranoid: false
                 },
                 {
@@ -92,6 +105,10 @@ const getStudents = async (req, res) => {
                     as: "tests",
                     required: false,
                     separate: true,
+                    include: {
+                        model: TestName,
+                        as: "test_name",
+                    },
                     order: [
                         ["createdAt", "DESC"]
                     ],

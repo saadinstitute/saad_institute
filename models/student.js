@@ -22,7 +22,7 @@ const Student = dbConnection.define('student', {
         type: DataTypes.DATE,
         allowNull: true
     },
-    joindedAt: {
+    joinedAt: {
         type: DataTypes.DATE,
         allowNull: true
     },
